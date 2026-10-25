@@ -3,4 +3,6 @@
 **/obj/
 *.user
 *.suo
+**/*.csproj.user
 appsettings.Development.json
+**/appsettings.Development.json
