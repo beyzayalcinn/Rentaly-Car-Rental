@@ -1,0 +1,492 @@
+﻿@model List<Rentaly.EntityLayer.Entities.CarModel>
+
+@{
+    ViewData["Title"] = "Araç Modelleri";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+
+    var models = Model ?? new List<Rentaly.EntityLayer.Entities.CarModel>();
+}
+
+<style>
+    .fleet-page {
+        padding: 12px 4px 32px;
+        color: #202a38;
+    }
+
+    .fleet-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 25px;
+    }
+
+    .fleet-title {
+        margin: 0 0 7px;
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -.8px;
+        color: #172033;
+    }
+
+    .fleet-subtitle {
+        margin: 0;
+        font-size: 13px;
+        color: #8993a2;
+    }
+
+    .fleet-add {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 12px 18px;
+        border-radius: 10px;
+        background: #172033;
+        color: #fff !important;
+        text-decoration: none !important;
+        font-size: 13px;
+        font-weight: 700;
+        transition: .2s ease;
+    }
+
+        .fleet-add:hover {
+            background: #34435b;
+            transform: translateY(-2px);
+        }
+
+    .fleet-summary {
+        display: flex;
+        align-items: center;
+        gap: 17px;
+        padding: 22px 24px;
+        margin-bottom: 30px;
+        border: 1px solid #e7ebf0;
+        border-radius: 15px;
+        background: #fff;
+    }
+
+    .fleet-summary-icon {
+        width: 54px;
+        height: 54px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 13px;
+        background: #f0f2f5;
+        color: #263750;
+        font-size: 23px;
+    }
+
+    .fleet-summary-label {
+        color: #8993a2;
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+
+    .fleet-summary-count {
+        color: #172033;
+        font-size: 26px;
+        line-height: 1.1;
+        font-weight: 800;
+    }
+
+    .fleet-summary-note {
+        margin-left: auto;
+        color: #8b95a5;
+        font-size: 12px;
+    }
+
+    .fleet-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 17px;
+    }
+
+        .fleet-section-header h5 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 800;
+            color: #202a38;
+        }
+
+    .fleet-search {
+        position: relative;
+        width: 270px;
+        max-width: 100%;
+    }
+
+        .fleet-search i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9aa3b1;
+        }
+
+        .fleet-search input {
+            width: 100%;
+            padding: 11px 13px 11px 37px;
+            border: 1px solid #e5e9ef;
+            border-radius: 10px;
+            background: #fff;
+            outline: none;
+            font-size: 13px;
+        }
+
+            .fleet-search input:focus {
+                border-color: #8c98a9;
+                box-shadow: 0 0 0 3px rgba(30, 45, 65, .06);
+            }
+
+    .fleet-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+        gap: 20px;
+    }
+
+    .fleet-card {
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid #e8ebf0;
+        border-radius: 15px;
+        background: #fff;
+        transition: transform .22s ease, box-shadow .22s ease;
+    }
+
+        .fleet-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 13px 30px rgba(24, 38, 58, .09);
+        }
+
+    .fleet-visual {
+        position: relative;
+        height: 155px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background: linear-gradient(145deg, #f6f7f9, #e9edf2);
+    }
+
+        .fleet-visual::before,
+        .fleet-visual::after {
+            position: absolute;
+            content: "";
+            border: 1px solid rgba(100, 115, 135, .10);
+            border-radius: 50%;
+        }
+
+        .fleet-visual::before {
+            width: 190px;
+            height: 190px;
+        }
+
+        .fleet-visual::after {
+            width: 145px;
+            height: 145px;
+        }
+
+    .fleet-car-icon {
+        position: relative;
+        z-index: 1;
+        color: #39485d;
+        font-size: 64px;
+        filter: drop-shadow(0 8px 7px rgba(20, 30, 45, .13));
+        transition: transform .25s ease;
+    }
+
+    .fleet-card:hover .fleet-car-icon {
+        transform: scale(1.08);
+    }
+
+    .fleet-id {
+        position: absolute;
+        z-index: 2;
+        top: 13px;
+        right: 13px;
+        padding: 6px 9px;
+        border: 1px solid rgba(255, 255, 255, .8);
+        border-radius: 7px;
+        background: rgba(255, 255, 255, .85);
+        color: #596579;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .fleet-card-body {
+        padding: 18px 18px 15px;
+    }
+
+    .fleet-label {
+        margin-bottom: 7px;
+        color: #929baa;
+        font-size: 10px;
+        font-weight: 750;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .fleet-model-name {
+        margin: 0;
+        color: #1e2939;
+        font-size: 19px;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .fleet-description {
+        margin-top: 7px;
+        color: #929baa;
+        font-size: 12px;
+    }
+
+    .fleet-card-footer {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 13px 18px;
+        border-top: 1px solid #edf0f4;
+    }
+
+    .fleet-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        flex: 1;
+        padding: 10px 8px;
+        border: 1px solid #e6eaf0;
+        border-radius: 9px;
+        background: #fff;
+        color: #435168 !important;
+        text-decoration: none !important;
+        font-size: 12px;
+        font-weight: 700;
+        transition: .2s ease;
+    }
+
+    .fleet-action-edit:hover {
+        background: #edf2f8;
+        border-color: #d7e0eb;
+    }
+
+    .fleet-action-delete {
+        color: #c94c54 !important;
+        border-color: #f3dfe1;
+        background: #fffafa;
+    }
+
+        .fleet-action-delete:hover {
+            background: #c94c54;
+            color: #fff !important;
+            border-color: #c94c54;
+        }
+
+    .fleet-empty {
+        grid-column: 1 / -1;
+        padding: 55px 20px;
+        border: 1px dashed #d9dfe7;
+        border-radius: 15px;
+        background: #fff;
+        text-align: center;
+    }
+
+        .fleet-empty i {
+            margin-bottom: 15px;
+            color: #9aa5b4;
+            font-size: 36px;
+        }
+
+        .fleet-empty h5 {
+            color: #263247;
+            font-weight: 800;
+        }
+
+        .fleet-empty p {
+            color: #909aaa;
+            font-size: 13px;
+        }
+
+    @@media (max-width: 576px) {
+        .fleet-title {
+            font-size: 23px;
+        }
+
+        .fleet-add {
+            width: 100%;
+        }
+
+        .fleet-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .fleet-summary {
+            padding: 17px;
+        }
+
+        .fleet-summary-note {
+            display: none;
+        }
+    }
+</style>
+
+<div class="container-fluid fleet-page">
+
+    <div class="fleet-header">
+        <div>
+            <h2 class="fleet-title">Araç Modelleri</h2>
+            <p class="fleet-subtitle">
+                Filonuzdaki modelleri görüntüleyin ve yönetin.
+            </p>
+        </div>
+
+        <a asp-area="Admin"
+           asp-controller="CarModel"
+           asp-action="CreateCarModel"
+           class="fleet-add">
+            <i class="fa-solid fa-plus"></i>
+            Yeni Model Ekle
+        </a>
+    </div>
+
+    <div class="fleet-summary">
+        <div class="fleet-summary-icon">
+            <i class="fa-solid fa-car-side"></i>
+        </div>
+
+        <div>
+            <div class="fleet-summary-label">Kayıtlı araç modeli</div>
+            <div class="fleet-summary-count">@models.Count</div>
+        </div>
+
+        <div class="fleet-summary-note">
+            <i class="fa-solid fa-layer-group me-1"></i>
+            Araç envanteri
+        </div>
+    </div>
+
+    <div class="fleet-section-header">
+        <h5>Model Kataloğu</h5>
+
+        <div class="fleet-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input id="fleetSearch"
+                   type="text"
+                   placeholder="Model adına göre ara..."
+                   autocomplete="off" />
+        </div>
+    </div>
+
+    <div class="fleet-grid" id="fleetGrid">
+
+        @if (models.Any())
+        {
+            foreach (var item in models.OrderBy(x => x.ModelName))
+            {
+                <article class="fleet-card"
+                         data-model-name="@item.ModelName">
+
+                    <div class="fleet-visual">
+                        <span class="fleet-id">ID #@item.CarModelId</span>
+                        <i class="fa-solid fa-car-side fleet-car-icon"></i>
+                    </div>
+
+                    <div class="fleet-card-body">
+                        <div class="fleet-label">Araç modeli</div>
+
+                        <h3 class="fleet-model-name">
+                            @(string.IsNullOrWhiteSpace(item.ModelName)
+                                                ? "İsimsiz Model"
+                                                : item.ModelName)
+                </h3>
+
+                        <div class="fleet-description">
+                            <i class="fa-regular fa-circle-check me-1"></i>
+                            Sisteme kayıtlı model
+                        </div>
+                    </div>
+
+                    <div class="fleet-card-footer">
+                        <a asp-area="Admin"
+                           asp-controller="CarModel"
+                           asp-action="UpdateCarModel"
+                           asp-route-id="@item.CarModelId"
+                           class="fleet-action fleet-action-edit">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            Düzenle
+                        </a>
+
+                        <a asp-area="Admin"
+                           asp-controller="CarModel"
+                           asp-action="DeleteCarModel"
+                           asp-route-id="@item.CarModelId"
+                           class="fleet-action fleet-action-delete"
+                           onclick="return confirm('Bu modeli silmek istediğinize emin misiniz?');">
+                            <i class="fa-solid fa-trash"></i>
+                            Sil
+                        </a>
+                    </div>
+
+                </article>
+                }
+        }
+        else
+        {
+            <div class="fleet-empty">
+                <i class="fa-solid fa-car-side"></i>
+                <h5>Henüz model eklenmemiş</h5>
+                <p>Araç kataloğunuzu oluşturmak için ilk modelinizi ekleyin.</p>
+
+                <a asp-area="Admin"
+                   asp-controller="CarModel"
+                   asp-action="CreateCarModel"
+                   class="fleet-add">
+                    <i class="fa-solid fa-plus"></i>
+                    İlk Modeli Ekle
+                </a>
+            </div>
+        }
+    </div>
+
+    <div id="fleetNoResults" class="fleet-empty"
+         style="display:none; margin-top:18px;">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <h5>Model bulunamadı</h5>
+        <p>Başka bir model adı aramayı deneyin.</p>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const search = document.getElementById("fleetSearch");
+        const cards = document.querySelectorAll(".fleet-card");
+        const noResults = document.getElementById("fleetNoResults");
+
+        if (!search) return;
+
+        search.addEventListener("input", function () {
+            const query = this.value.toLocaleLowerCase("tr-TR").trim();
+            let visibleCount = 0;
+
+            cards.forEach(function (card) {
+                const name = (card.dataset.modelName || "")
+                    .toLocaleLowerCase("tr-TR");
+
+                const visible = name.includes(query);
+                card.style.display = visible ? "" : "none";
+
+                if (visible) visibleCount++;
+            });
+
+            noResults.style.display =
+                cards.length > 0 && visibleCount === 0 ? "block" : "none";
+        });
+    });
+</script>

@@ -1,0 +1,467 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - Rentaly Admin</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    @RenderSection("Styles", required: false)
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="adminSidebar">
+
+        <a href="/Admin/Home/Index" class="sidebar-logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-car"></i>
+            </div>
+
+            <div class="logo-text">
+                <strong>RENTALY</strong>
+                <span>Administration</span>
+            </div>
+        </a>
+
+
+        <nav class="sidebar-nav">
+
+            <!-- GENEL -->
+            <div class="menu-label">
+                Genel
+            </div>
+
+            <a href="/Admin/Home/Index"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-gauge-high"></i>
+                </span>
+
+                <span class="link-text">
+                    Dashboard
+                </span>
+            </a>
+
+
+            <!-- ARAÇ YÖNETİMİ -->
+            <div class="menu-label">
+                Araç Yönetimi
+            </div>
+
+            <a href="/Admin/Car"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Car" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-car"></i>
+                </span>
+
+                <span class="link-text">
+                    Araçlar
+                </span>
+            </a>
+            <a href="/Admin/Rental"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Rental" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </span>
+
+                <span class="link-text">
+                    Rezervasyonlar
+                </span>
+
+            </a>
+
+
+            <a href="/Admin/Brand/BrandList"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Brand" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-tags"></i>
+                </span>
+
+                <span class="link-text">
+                    Markalar
+                </span>
+            </a>
+
+
+            <a href="/Admin/CarModel/CarModelList"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "CarModel" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-layer-group"></i>
+                </span>
+
+                <span class="link-text">
+                    Modeller
+                </span>
+            </a>
+
+
+            <a href="/Admin/Category/CategoryList"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Category" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-list"></i>
+                </span>
+
+                <span class="link-text">
+                    Kategoriler
+                </span>
+            </a>
+            <a href="/Admin/Branch"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Branch" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-location-dot"></i>
+                </span>
+
+                <span class="link-text">
+                    Şubeler
+                </span>
+            </a>
+            <a href="/Admin/Customer"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Customer" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-users"></i>
+                </span>
+
+                <span class="link-text">
+                    Müşteriler
+                </span>
+
+            </a>
+
+
+            <!-- ANA SAYFA -->
+            <div class="menu-label">
+                Ana Sayfa
+            </div>
+
+            <a href="/Admin/About/AboutList"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "About" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-circle-info"></i>
+                </span>
+
+                <span class="link-text">
+                    Hakkımızda
+                </span>
+            </a>
+
+
+            <a href="/Admin/Feature/FeatureList"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Feature" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-star"></i>
+                </span>
+
+                <span class="link-text">
+                    Özellikler
+                </span>
+            </a>
+
+
+            <a href="/Admin/Process/ProcessList"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Process" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-list-check"></i>
+                </span>
+
+                <span class="link-text">
+                    İşleyiş
+                </span>
+            </a>
+
+
+            <a href="/Admin/WhyChooseUs/WhyChooseUsList"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "WhyChooseUs" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-thumbs-up"></i>
+                </span>
+
+                <span class="link-text">
+                    Neden Biz?
+                </span>
+            </a>
+
+
+            <a href="/Admin/OurFuture/OurFutureList"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "OurFuture" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-rocket"></i>
+                </span>
+
+                <span class="link-text">
+                    Geleceğimiz
+                </span>
+            </a>
+
+
+            <a href="/Admin/Award/AwardList"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Award" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-trophy"></i>
+                </span>
+
+                <span class="link-text">
+                    Ödüller
+                </span>
+            </a>
+
+
+            <a href="/Admin/Faq/FaqList"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Faq" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-circle-question"></i>
+                </span>
+
+                <span class="link-text">
+                    SSS
+                </span>
+            </a>
+
+
+            <a href="/Admin/Testimonial/TestimonialList"
+               class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Testimonial" ? "active" : "")">
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-comments"></i>
+                </span>
+
+                <span class="link-text">
+                    Yorumlar
+                </span>
+
+            </a>
+
+        </nav>
+
+
+        <!-- SIDEBAR FOOTER -->
+        <div class="sidebar-footer">
+
+            <div class="sidebar-user">
+
+                <img src="https://ui-avatars.com/api/?name=Admin&background=1a56db&color=fff"
+                     alt="Admin" />
+
+                <div class="user-info">
+                    <div class="user-name">
+                        Admin
+                    </div>
+
+                    <div class="user-role">
+                        Yönetici
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MOBİL OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+
+    <!-- MAIN WRAPPER -->
+    <div class="main-wrapper">
+
+        <!-- TOP NAVBAR -->
+        <header class="navbar-top">
+
+            <button type="button"
+                    class="toggle-btn"
+                    id="sidebarToggle">
+
+                <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+
+            <div class="navbar-breadcrumb">
+
+                <ol class="breadcrumb">
+
+                    <li class="breadcrumb-item">
+                        <a href="/Admin/Home/Index">
+                            Admin
+                        </a>
+                    </li>
+
+                    <li class="breadcrumb-item active">
+                        @ViewData["Title"]
+                    </li>
+
+                </ol>
+
+            </div>
+
+
+            <div class="navbar-actions">
+
+                <a href="/" target="_blank"
+                   class="action-btn"
+                   title="Siteyi Görüntüle">
+
+                    <i class="fa-solid fa-globe"></i>
+
+                </a>
+
+
+                <button type="button"
+                        class="action-btn"
+                        title="Bildirimler">
+
+                    <i class="fa-regular fa-bell"></i>
+
+                    <span class="badge-dot"></span>
+
+                </button>
+
+
+                <div class="navbar-divider"></div>
+
+
+                <div class="dropdown admin-dropdown">
+
+                    <button class="dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown">
+
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=1a56db&color=fff"
+                             alt="Admin" />
+
+                        <div class="admin-info">
+
+                            <span class="admin-name">
+                                Admin
+                            </span>
+
+                            <span class="admin-role">
+                                Yönetici
+                            </span>
+
+                        </div>
+
+                        <i class="fa-solid fa-chevron-down ms-2"></i>
+
+                    </button>
+
+
+                    <ul class="dropdown-menu dropdown-menu-end">
+
+                        <li>
+                            <a class="dropdown-item" href="/">
+                                <i class="fa-solid fa-globe"></i>
+                                Siteye Git
+                            </a>
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item text-danger" href="#">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                                Çıkış Yap
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- PAGE CONTENT -->
+        <main class="page-content">
+
+            @RenderBody()
+
+        </main>
+
+
+        <!-- FOOTER -->
+        <footer class="site-footer">
+
+            <div class="footer-text">
+                © @DateTime.Now.Year
+                <span>Rentaly</span>
+                Admin Panel
+            </div>
+
+            <div class="footer-links">
+                <a href="/">
+                    Web Sitesi
+                </a>
+            </div>
+
+        </footer>
+
+    </div>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+        const sidebar = document.getElementById("adminSidebar");
+        const toggleButton = document.getElementById("sidebarToggle");
+        const overlay = document.getElementById("sidebarOverlay");
+
+        toggleButton?.addEventListener("click", function () {
+
+            if (window.innerWidth <= 991) {
+
+                sidebar.classList.toggle("mobile-open");
+
+            }
+            else {
+
+                sidebar.classList.toggle("collapsed");
+
+            }
+
+        });
+
+
+        overlay?.addEventListener("click", function () {
+
+            sidebar.classList.remove("mobile-open");
+
+        });
+
+    </script>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

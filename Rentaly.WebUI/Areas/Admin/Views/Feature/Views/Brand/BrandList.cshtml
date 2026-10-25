@@ -1,0 +1,20 @@
+﻿@model List<Rentaly.EntityLayer.Entities.Brand>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Marka</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.BrandId</td>
+                <td>@item.BrandName</td>
+            </tr>
+        }
+    </tbody>
+</table>

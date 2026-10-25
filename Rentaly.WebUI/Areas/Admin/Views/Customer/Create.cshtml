@@ -1,0 +1,141 @@
+﻿@model Rentaly.DtoLayer.CustomerDtos.CreateCustomerDto
+
+@{
+    ViewData["Title"] = "Yeni Müşteri";
+}
+
+<div class="container-fluid py-4">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Yeni Müşteri Ekle</h2>
+        <p class="text-muted">
+            Rentaly sistemine yeni müşteri ekleyin.
+        </p>
+    </div>
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">Müşteri Bilgileri</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-area="Admin"
+                  asp-controller="Customer"
+                  asp-action="Create"
+                  method="post">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Ad</label>
+
+                        <input asp-for="Name"
+                               class="form-control"
+                               placeholder="Müşteri adı"
+                               required />
+
+                        <span asp-validation-for="Name"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Soyad</label>
+
+                        <input asp-for="SurName"
+                               class="form-control"
+                               placeholder="Müşteri soyadı"
+                               required />
+
+                        <span asp-validation-for="SurName"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">E-posta</label>
+
+                        <input asp-for="Email"
+                               type="email"
+                               class="form-control"
+                               placeholder="ornek@mail.com"
+                               required />
+
+                        <span asp-validation-for="Email"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Telefon</label>
+
+                        <input asp-for="Phone"
+                               class="form-control"
+                               placeholder="05XX XXX XX XX"
+                               required />
+
+                        <span asp-validation-for="Phone"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">TC Kimlik No</label>
+
+                        <input asp-for="IdentityNumber"
+                               class="form-control"
+                               placeholder="11 haneli kimlik numarası"
+                               required />
+
+                        <span asp-validation-for="IdentityNumber"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Ehliyet No</label>
+
+                        <input asp-for="DrivingLicenseNumber"
+                               class="form-control"
+                               placeholder="Ehliyet numarası"
+                               required />
+
+                        <span asp-validation-for="DrivingLicenseNumber"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            Ehliyet Tarihi
+                        </label>
+
+                        <input asp-for="DrivingLicenseDate"
+                               type="date"
+                               class="form-control"
+                               required />
+
+                        <span asp-validation-for="DrivingLicenseDate"
+                              class="text-danger"></span>
+                    </div>
+
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a href="/Admin/Customer/Index"
+                       class="btn btn-secondary">
+                        Vazgeç
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Müşteriyi Kaydet
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

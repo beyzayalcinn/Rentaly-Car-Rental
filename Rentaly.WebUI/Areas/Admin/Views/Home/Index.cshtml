@@ -1,0 +1,998 @@
+
+@using System.Globalization
+@using System.Linq
+
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+
+    var tr = CultureInfo.GetCultureInfo("tr-TR");
+
+    int totalCars = Convert.ToInt32(ViewBag.TotalCars ?? 0);
+    int totalBrands = Convert.ToInt32(ViewBag.TotalBrands ?? 0);
+    int totalModels = Convert.ToInt32(ViewBag.TotalModels ?? 0);
+    int totalCategories = Convert.ToInt32(ViewBag.TotalCategories ?? 0);
+    int totalCustomers = Convert.ToInt32(ViewBag.TotalCustomers ?? 0);
+    int totalRentals = Convert.ToInt32(ViewBag.TotalRentals ?? 0);
+    int pendingRentals = Convert.ToInt32(ViewBag.PendingRentals ?? 0);
+    int approvedRentals = Convert.ToInt32(ViewBag.ApprovedRentals ?? 0);
+    int rejectedRentals = Convert.ToInt32(ViewBag.RejectedRentals ?? 0);
+    int cancelledRentals = Convert.ToInt32(ViewBag.CancelledRentals ?? 0);
+
+    decimal totalRevenue = ViewBag.TotalRevenue == null
+        ? 0
+        : Convert.ToDecimal(ViewBag.TotalRevenue);
+
+    var cars = ViewBag.LatestCars as IEnumerable<dynamic>;
+    var rentals = ViewBag.LatestRentals as IEnumerable<dynamic>;
+
+    double pendingPercent = totalRentals > 0
+        ? (double)pendingRentals / totalRentals * 100 : 0;
+
+    double approvedPercent = totalRentals > 0
+        ? (double)approvedRentals / totalRentals * 100 : 0;
+
+    double otherPercent = totalRentals > 0
+        ? (double)(rejectedRentals + cancelledRentals) / totalRentals * 100 : 0;
+}
+
+<style>
+    .dash {
+        --dash-primary: #f5a623;
+        --dash-ink: #172033;
+        --dash-muted: #8791a5;
+        --dash-border: #edf0f5;
+        width: 100%;
+        max-width: 100%;
+        color: var(--dash-ink);
+        padding: 0 0 35px;
+        min-width: 0;
+    }
+
+    .dash *,
+    .dash *::before,
+    .dash *::after {
+        box-sizing: border-box;
+    }
+
+    .dash-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 26px;
+        flex-wrap: wrap;
+    }
+
+    .dash-eyebrow {
+        color: #e49a16;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+    }
+
+    .dash-title {
+        font-size: clamp(25px, 3vw, 34px);
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin: 0 0 8px;
+        color: var(--dash-ink);
+    }
+
+    .dash-subtitle {
+        margin: 0;
+        font-size: 14px;
+        color: var(--dash-muted);
+        line-height: 1.7;
+    }
+
+    .dash-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 12px 17px;
+        border-radius: 11px;
+        text-decoration: none !important;
+        font-size: 13px;
+        font-weight: 700;
+        transition: .2s ease;
+    }
+
+    .dash-btn-primary {
+        background: var(--dash-primary);
+        color: #172033 !important;
+        box-shadow: 0 7px 18px rgba(245,166,35,.2);
+    }
+
+    .dash-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(245,166,35,.3);
+    }
+
+    .dash-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 22px;
+        padding: 30px;
+        margin-bottom: 28px;
+        color: white;
+        background:
+            linear-gradient(105deg, rgba(17,27,46,.97), rgba(17,27,46,.84)),
+            url('/RentalyTema/images/background/1.jpg') center/cover;
+        box-shadow: 0 14px 35px rgba(22,32,51,.12);
+    }
+
+    .dash-hero::after {
+        content: "";
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        border: 40px solid rgba(245,166,35,.09);
+        border-radius: 50%;
+        right: -60px;
+        top: -100px;
+        pointer-events: none;
+    }
+
+    .dash-hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 650px;
+    }
+
+    .dash-hero-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #ffd27f;
+        font-size: 11px;
+        letter-spacing: 1.6px;
+        font-weight: 800;
+        margin-bottom: 13px;
+    }
+
+    .dash-hero h2 {
+        color: white;
+        font-size: clamp(23px, 3vw, 31px);
+        font-weight: 800;
+        margin: 0 0 12px;
+    }
+
+    .dash-hero p {
+        color: rgba(255,255,255,.76);
+        font-size: 14px;
+        line-height: 1.8;
+        margin: 0 0 21px;
+    }
+
+    .dash-hero .dash-btn {
+        background: var(--dash-primary);
+        color: #172033 !important;
+    }
+
+    .dash-section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin: 30px 0 16px;
+        flex-wrap: wrap;
+    }
+
+    .dash-section-heading h3 {
+        font-size: 17px;
+        font-weight: 800;
+        margin: 0;
+        color: var(--dash-ink);
+    }
+
+    .dash-section-heading span {
+        font-size: 12px;
+        color: var(--dash-muted);
+    }
+
+    /* Genel bakış kartları: tüm kartlar aynı grid içinde */
+    .dash-stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .dash-stat {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        background: #fff;
+        border: 1px solid var(--dash-border);
+        border-radius: 17px;
+        padding: 20px;
+        min-width: 0;
+        min-height: 175px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(22,32,51,.025);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .dash-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 28px rgba(22,32,51,.07);
+    }
+
+    .dash-stat-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 18px;
+    }
+
+    .dash-stat-icon {
+        width: 43px;
+        height: 43px;
+        border-radius: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        flex-shrink: 0;
+    }
+
+    .dash-icon-orange { background: #fff3dc; color: #df9410; }
+    .dash-icon-blue { background: #eaf2ff; color: #477be8; }
+    .dash-icon-green { background: #e5f8ef; color: #169b62; }
+    .dash-icon-purple { background: #f1eaff; color: #8657d9; }
+    .dash-icon-red { background: #ffebeb; color: #dc5353; }
+    .dash-icon-cyan { background: #e5f8fb; color: #1598a8; }
+
+    .dash-stat-label {
+        color: var(--dash-muted);
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        line-height: 1.5;
+    }
+
+    .dash-stat-value {
+        display: block;
+        width: 100%;
+        color: var(--dash-ink);
+        font-size: clamp(24px, 2.2vw, 30px);
+        font-weight: 800;
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+    }
+
+    .dash-stat-foot {
+        color: #a0a8b7;
+        font-size: 11px;
+        margin-top: auto;
+        padding-top: 12px;
+        line-height: 1.5;
+    }
+
+    .dash-panel {
+        background: #fff;
+        border: 1px solid var(--dash-border);
+        border-radius: 18px;
+        overflow: hidden;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .dash-panel-header {
+        padding: 20px 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border-bottom: 1px solid var(--dash-border);
+        flex-wrap: wrap;
+    }
+
+    .dash-panel-header h3 {
+        font-size: 15px;
+        font-weight: 800;
+        margin: 0;
+        color: var(--dash-ink);
+    }
+
+    .dash-panel-header p {
+        font-size: 12px;
+        color: var(--dash-muted);
+        margin: 5px 0 0;
+    }
+
+    .dash-text-link {
+        color: #d89012 !important;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none !important;
+        white-space: nowrap;
+    }
+
+    .dash-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .dash-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 580px;
+    }
+
+    .dash-table th {
+        padding: 13px 20px;
+        background: #fafbfc;
+        color: #9099aa;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .7px;
+        text-transform: uppercase;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .dash-table td {
+        padding: 15px 20px;
+        border-top: 1px solid #f1f3f7;
+        font-size: 12px;
+        color: #525e73;
+        vertical-align: middle;
+    }
+
+    .dash-table tbody tr:hover {
+        background: #fcfcfd;
+    }
+
+    .dash-car {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 160px;
+    }
+
+    .dash-car-img {
+        width: 62px;
+        height: 43px;
+        object-fit: contain;
+        border-radius: 8px;
+        background: #f5f6f8;
+        flex-shrink: 0;
+    }
+
+    .dash-car-name {
+        color: var(--dash-ink);
+        font-weight: 800;
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+
+    .dash-car-sub {
+        color: #99a1af;
+        font-size: 11px;
+    }
+
+    .dash-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 9px;
+        border-radius: 7px;
+        font-size: 10px;
+        font-weight: 800;
+        white-space: nowrap;
+        margin: 2px;
+    }
+
+    .dash-status::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        background: currentColor;
+        border-radius: 50%;
+    }
+
+    .dash-status-available { background: #e7f8ee; color: #188451; }
+    .dash-status-unavailable { background: #fff0e8; color: #c56b2a; }
+    .dash-status-active { background: #eaf1ff; color: #426fd0; }
+    .dash-status-inactive { background: #f0f1f4; color: #737b8b; }
+    .dash-status-pending { background: #fff4df; color: #b77a10; }
+    .dash-status-approved { background: #e7f8ee; color: #188451; }
+    .dash-status-rejected,
+    .dash-status-cancelled { background: #ffebeb; color: #c84747; }
+
+    .dash-bottom-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(280px, .85fr);
+        gap: 20px;
+        align-items: start;
+        width: 100%;
+    }
+
+    .dash-status-content {
+        padding: 22px;
+    }
+
+    .dash-progress-item {
+        margin-bottom: 23px;
+    }
+
+    .dash-progress-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .dash-progress-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 12px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+    }
+
+    .dash-progress-head strong {
+        color: var(--dash-ink);
+        font-weight: 700;
+    }
+
+    .dash-progress-head span {
+        color: var(--dash-muted);
+    }
+
+    .dash-progress {
+        height: 7px;
+        background: #f0f2f6;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .dash-progress-fill {
+        height: 100%;
+        border-radius: 20px;
+        max-width: 100%;
+    }
+
+    .dash-fill-orange { background: #f5a623; }
+    .dash-fill-green { background: #27b879; }
+    .dash-fill-red { background: #e45b5b; }
+
+    .dash-quick-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 11px;
+        padding: 18px;
+    }
+
+    .dash-quick {
+        display: block;
+        min-height: 105px;
+        border: 1px solid var(--dash-border);
+        border-radius: 13px;
+        padding: 15px;
+        color: var(--dash-ink) !important;
+        text-decoration: none !important;
+        transition: .2s ease;
+    }
+
+    .dash-quick:hover {
+        border-color: #f5c46e;
+        background: #fffbf3;
+        transform: translateY(-2px);
+    }
+
+    .dash-quick-icon {
+        color: #d89012;
+        font-size: 17px;
+        margin-bottom: 13px;
+    }
+
+    .dash-quick strong {
+        display: block;
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+
+    .dash-quick small {
+        color: var(--dash-muted);
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+    .dash-empty {
+        padding: 35px 20px;
+        text-align: center;
+        color: var(--dash-muted);
+        font-size: 13px;
+    }
+
+    .dash-empty i {
+        display: block;
+        font-size: 27px;
+        margin-bottom: 12px;
+        color: #c2c8d3;
+    }
+
+    @@media (max-width: 1200px) {
+        .dash-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .dash-bottom-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 575px) {
+        .dash-hero {
+            padding: 23px 20px;
+            border-radius: 16px;
+        }
+
+        .dash-stats {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .dash-stat {
+            min-height: 150px;
+            padding: 17px;
+        }
+
+        .dash-stat-icon {
+            width: 38px;
+            height: 38px;
+        }
+
+        .dash-panel-header {
+            padding: 17px;
+        }
+
+        .dash-quick-grid {
+            padding: 12px;
+            gap: 9px;
+        }
+    }
+</style>
+
+<div class="dash">
+
+    <div class="dash-header">
+        <div>
+            <div class="dash-eyebrow">RENTALY / YÖNETİM PANELİ</div>
+            <h1 class="dash-title">Dashboard</h1>
+            <p class="dash-subtitle">
+                Araç filonu ve kiralama operasyonlarını tek ekrandan yönet.
+            </p>
+        </div>
+
+        <a href="/Admin/Car/Create" class="dash-btn dash-btn-primary">
+            <i class="fa-solid fa-plus"></i>
+            Yeni Araç Ekle
+        </a>
+    </div>
+
+    <section class="dash-hero">
+        <div class="dash-hero-content">
+            <div class="dash-hero-label">
+                <i class="fa-solid fa-chart-line"></i>
+                YÖNETİM ÖZETİ
+            </div>
+
+            <h2>Rentaly yönetim merkezine hoş geldin.</h2>
+
+            <p>
+                Araçlarını, müşterilerini ve rezervasyonlarını buradan takip edebilirsin.
+                Bekleyen rezervasyonları kontrol et, filonu güncelle ve işletmenin genel
+                durumunu tek bakışta incele.
+            </p>
+
+            <a href="/Admin/Rental" class="dash-btn">
+                <i class="fa-solid fa-calendar-check"></i>
+                Rezervasyonları Yönet
+            </a>
+        </div>
+    </section>
+
+    <div class="dash-section-heading">
+        <h3>Genel Bakış</h3>
+        <span>Mevcut sistem kayıtları</span>
+    </div>
+
+    <div class="dash-stats">
+
+        <div class="dash-stat">
+            <div class="dash-stat-top">
+                <div class="dash-stat-icon dash-icon-orange">
+                    <i class="fa-solid fa-car"></i>
+                </div>
+            </div>
+            <div class="dash-stat-label">Toplam Araç</div>
+            <div class="dash-stat-value">@totalCars</div>
+            <div class="dash-stat-foot">Kayıtlı araç sayısı</div>
+        </div>
+
+        <div class="dash-stat">
+            <div class="dash-stat-top">
+                <div class="dash-stat-icon dash-icon-blue">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+            </div>
+            <div class="dash-stat-label">Toplam Rezervasyon</div>
+            <div class="dash-stat-value">@totalRentals</div>
+            <div class="dash-stat-foot">Sistemdeki tüm rezervasyonlar</div>
+        </div>
+
+        <div class="dash-stat">
+            <div class="dash-stat-top">
+                <div class="dash-stat-icon dash-icon-green">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+            <div class="dash-stat-label">Toplam Müşteri</div>
+            <div class="dash-stat-value">@totalCustomers</div>
+            <div class="dash-stat-foot">Kayıtlı müşteri sayısı</div>
+        </div>
+
+        <div class="dash-stat">
+            <div class="dash-stat-top">
+                <div class="dash-stat-icon dash-icon-purple">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+            </div>
+            <div class="dash-stat-label">Onaylı Rezervasyon Geliri</div>
+            <div class="dash-stat-value" style="font-size:clamp(20px,2vw,26px)">
+                @totalRevenue.ToString("N0", tr) ₺
+            </div>
+            <div class="dash-stat-foot">Onaylı rezervasyonların toplam tutarı</div>
+        </div>
+
+        <div class="dash-stat">
+            <div class="dash-stat-top">
+                <div class="dash-stat-icon dash-icon-cyan">
+                    <i class="fa-solid fa-tags"></i>
+                </div>
+            </div>
+            <div class="dash-stat-label">Toplam Marka</div>
+            <div class="dash-stat-value">@totalBrands</div>
+            <div class="dash-stat-foot">Tanımlı araç markaları</div>
+        </div>
+
+        <div class="dash-stat">
+            <div class="dash-stat-top">
+                <div class="dash-stat-icon dash-icon-purple">
+                    <i class="fa-solid fa-car-side"></i>
+                </div>
+            </div>
+            <div class="dash-stat-label">Toplam Model</div>
+            <div class="dash-stat-value">@totalModels</div>
+            <div class="dash-stat-foot">Tanımlı araç modelleri</div>
+        </div>
+
+        <div class="dash-stat">
+            <div class="dash-stat-top">
+                <div class="dash-stat-icon dash-icon-orange">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+            </div>
+            <div class="dash-stat-label">Toplam Kategori</div>
+            <div class="dash-stat-value">@totalCategories</div>
+            <div class="dash-stat-foot">Tanımlı araç kategorileri</div>
+        </div>
+
+        <div class="dash-stat">
+            <div class="dash-stat-top">
+                <div class="dash-stat-icon dash-icon-red">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+            </div>
+            <div class="dash-stat-label">Bekleyen Rezervasyon</div>
+            <div class="dash-stat-value">@pendingRentals</div>
+            <div class="dash-stat-foot">İşlem bekleyen talepler</div>
+        </div>
+
+    </div>
+
+    <div class="dash-section-heading">
+        <h3>Son Eklenen Araçlar</h3>
+        <span>En son kayıt edilen 5 araç</span>
+    </div>
+
+    <section class="dash-panel">
+        <div class="dash-panel-header">
+            <div>
+                <h3>Araç Filosu</h3>
+                <p>Filodaki son araç kayıtları</p>
+            </div>
+            <a href="/Admin/Car" class="dash-text-link">
+                Tüm Araçlar <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        @if (cars != null && cars.Any())
+        {
+            <div class="dash-table-wrap">
+                <table class="dash-table">
+                    <thead>
+                        <tr>
+                            <th>Araç</th>
+                            <th>Plaka</th>
+                            <th>Yıl</th>
+                            <th>Günlük Fiyat</th>
+                            <th>Durum</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var car in cars)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="dash-car">
+                                        @if (!string.IsNullOrWhiteSpace((string)car.ImageUrl))
+                                        {
+                                            <img class="dash-car-img"
+                                                 src="@car.ImageUrl"
+                                                 alt="Araç görseli"
+                                                 onerror="this.style.display='none'" />
+                                        }
+                                        else
+                                        {
+                                            <div class="dash-car-img d-flex align-items-center justify-content-center">
+                                                <i class="fa-solid fa-car"></i>
+                                            </div>
+                                        }
+
+                                        <div>
+                                            <div class="dash-car-name">Araç #@car.CarId</div>
+                                            <div class="dash-car-sub">@car.FuelType</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><strong>@car.PlateNumber</strong></td>
+                                <td>@car.Year</td>
+                                <td>
+                                    <strong>@(((decimal)car.DailyPrice).ToString("N0", tr)) ₺</strong>
+                                </td>
+                                <td>
+                                    @if ((bool)car.IsAvailable)
+                                    {
+                                        <span class="dash-status dash-status-available">Müsait</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="dash-status dash-status-unavailable">Müsait Değil</span>
+                                    }
+
+                                    @if ((bool)car.IsActive)
+                                    {
+                                        <span class="dash-status dash-status-active">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="dash-status dash-status-inactive">Pasif</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="/Admin/Car/UpdateCar/@car.CarId" class="dash-text-link">
+                                        Düzenle <i class="fa-solid fa-arrow-right"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="dash-empty">
+                <i class="fa-solid fa-car"></i>
+                Henüz listelenecek araç kaydı bulunmuyor.
+                <div style="margin-top:14px">
+                    <a href="/Admin/Car/Create" class="dash-btn dash-btn-primary">
+                        İlk Aracı Ekle
+                    </a>
+                </div>
+            </div>
+        }
+    </section>
+
+    <div class="dash-section-heading">
+        <h3>Rezervasyonlar ve Hızlı İşlemler</h3>
+        <span>Yönetim araçları</span>
+    </div>
+
+    <div class="dash-bottom-grid">
+
+        <section class="dash-panel">
+            <div class="dash-panel-header">
+                <div>
+                    <h3>Rezervasyon Durumu</h3>
+                    <p>Toplam @totalRentals rezervasyon üzerinden</p>
+                </div>
+                <a href="/Admin/Rental" class="dash-text-link">
+                    Yönet <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="dash-status-content">
+
+                <div class="dash-progress-item">
+                    <div class="dash-progress-head">
+                        <strong>
+                            <i class="fa-solid fa-circle-check" style="color:#27b879"></i>
+                            Onaylandı
+                        </strong>
+                        <span>@approvedRentals kayıt · @approvedPercent.ToString("N0", tr)%</span>
+                    </div>
+                    <div class="dash-progress">
+                        <div class="dash-progress-fill dash-fill-green"
+                             style="width:@approvedPercent.ToString("F2", CultureInfo.InvariantCulture)%"></div>
+                    </div>
+                </div>
+
+                <div class="dash-progress-item">
+                    <div class="dash-progress-head">
+                        <strong>
+                            <i class="fa-solid fa-clock" style="color:#f5a623"></i>
+                            Bekliyor
+                        </strong>
+                        <span>@pendingRentals kayıt · @pendingPercent.ToString("N0", tr)%</span>
+                    </div>
+                    <div class="dash-progress">
+                        <div class="dash-progress-fill dash-fill-orange"
+                             style="width:@pendingPercent.ToString("F2", CultureInfo.InvariantCulture)%"></div>
+                    </div>
+                </div>
+
+                <div class="dash-progress-item">
+                    <div class="dash-progress-head">
+                        <strong>
+                            <i class="fa-solid fa-circle-xmark" style="color:#e45b5b"></i>
+                            Reddedildi / İptal
+                        </strong>
+                        <span>@(rejectedRentals + cancelledRentals) kayıt · @otherPercent.ToString("N0", tr)%</span>
+                    </div>
+                    <div class="dash-progress">
+                        <div class="dash-progress-fill dash-fill-red"
+                             style="width:@otherPercent.ToString("F2", CultureInfo.InvariantCulture)%"></div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="dash-panel">
+            <div class="dash-panel-header">
+                <div>
+                    <h3>Hızlı İşlemler</h3>
+                    <p>Sık kullanılan yönetim sayfaları</p>
+                </div>
+            </div>
+
+            <div class="dash-quick-grid">
+                <a href="/Admin/Car/Create" class="dash-quick">
+                    <div class="dash-quick-icon"><i class="fa-solid fa-plus"></i></div>
+                    <strong>Araç Ekle</strong>
+                    <small>Filoya yeni araç kaydet</small>
+                </a>
+
+                <a href="/Admin/Rental" class="dash-quick">
+                    <div class="dash-quick-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                    <strong>Rezervasyonlar</strong>
+                    <small>Talep ve onayları yönet</small>
+                </a>
+
+                <a href="/Admin/Brand/BrandList" class="dash-quick">
+                    <div class="dash-quick-icon"><i class="fa-solid fa-tags"></i></div>
+                    <strong>Markalar</strong>
+                    <small>Marka kayıtlarını düzenle</small>
+                </a>
+
+                <a href="/Admin/CarModel/CarModelList" class="dash-quick">
+                    <div class="dash-quick-icon"><i class="fa-solid fa-car-side"></i></div>
+                    <strong>Modeller</strong>
+                    <small>Model kayıtlarını yönet</small>
+                </a>
+
+                <a href="/Admin/Category/CategoryList" class="dash-quick">
+                    <div class="dash-quick-icon"><i class="fa-solid fa-layer-group"></i></div>
+                    <strong>Kategoriler</strong>
+                    <small>Araç sınıflarını yönet</small>
+                </a>
+
+                <a href="/Admin/Customer" class="dash-quick">
+                    <div class="dash-quick-icon"><i class="fa-solid fa-users"></i></div>
+                    <strong>Müşteriler</strong>
+                    <small>Müşteri kayıtlarını görüntüle</small>
+                </a>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="dash-section-heading">
+        <h3>Son Rezervasyonlar</h3>
+        <span>En son oluşturulan 5 kayıt</span>
+    </div>
+
+    <section class="dash-panel">
+        <div class="dash-panel-header">
+            <div>
+                <h3>Rezervasyon Geçmişi</h3>
+                <p>Son rezervasyon kayıtlarının özeti</p>
+            </div>
+            <a href="/Admin/Rental" class="dash-text-link">
+                Tüm Rezervasyonlar <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        @if (rentals != null && rentals.Any())
+        {
+            <div class="dash-table-wrap">
+                <table class="dash-table">
+                    <thead>
+                        <tr>
+                            <th>Rezervasyon No</th>
+                            <th>Müşteri</th>
+                            <th>Başlangıç</th>
+                            <th>Bitiş</th>
+                            <th>Tutar</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rental in rentals)
+                        {
+                            var status = (string)rental.Status ?? "";
+
+                            var statusClass = status switch
+                            {
+                                "Approved" => "dash-status-approved",
+                                "Pending" => "dash-status-pending",
+                                "Rejected" => "dash-status-rejected",
+                                "Cancelled" => "dash-status-cancelled",
+                                _ => "dash-status-inactive"
+                            };
+
+                            var statusText = status switch
+                            {
+                                "Approved" => "Onaylandı",
+                                "Pending" => "Bekliyor",
+                                "Rejected" => "Reddedildi",
+                                "Cancelled" => "İptal Edildi",
+                                _ => string.IsNullOrWhiteSpace(status) ? "Belirsiz" : status
+                            };
+
+                            <tr>
+                                <td><strong>#REC-@rental.RentalId</strong></td>
+                                <td>Müşteri #@rental.CustomerId</td>
+                                <td>@(((DateTime)rental.PickupDate).ToString("dd.MM.yyyy"))</td>
+                                <td>@(((DateTime)rental.ReturnDate).ToString("dd.MM.yyyy"))</td>
+                                <td>
+                                    <strong>@(((decimal)rental.TotalPrice).ToString("N0", tr)) ₺</strong>
+                                </td>
+                                <td>
+                                    <span class="dash-status @statusClass">@statusText</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="dash-empty">
+                <i class="fa-solid fa-calendar-xmark"></i>
+                Henüz rezervasyon kaydı bulunmuyor.
+            </div>
+        }
+    </section>
+
+</div>

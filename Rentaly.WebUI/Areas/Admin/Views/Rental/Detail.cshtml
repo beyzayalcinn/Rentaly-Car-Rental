@@ -1,0 +1,355 @@
+﻿@model Rentaly.EntityLayer.Entities.Rental
+
+@{
+    var car = ViewBag.Car as Rentaly.EntityLayer.Entities.Car;
+    var customer = ViewBag.Customer as Rentaly.DtoLayer.CustomerDtos.GetCustomerByIdDto;
+    var pickupBranch = ViewBag.PickupBranch as Rentaly.EntityLayer.Entities.Branch;
+    var returnBranch = ViewBag.ReturnBranch as Rentaly.EntityLayer.Entities.Branch;
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold mb-1">
+                Rezervasyon #@Model.RentalId
+            </h2>
+
+            <p class="text-muted mb-0">
+                Rezervasyon detaylarını görüntüleyin.
+            </p>
+
+        </div>
+
+        <a asp-area="Admin"
+           asp-controller="Rental"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+
+            ← Rezervasyonlara Dön
+
+        </a>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- MÜŞTERİ -->
+
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold mb-4">
+                        Müşteri Bilgileri
+                    </h4>
+
+                    @if (customer != null)
+                    {
+                        <div class="mb-3">
+
+                            <small class="text-muted">
+                                Ad Soyad
+                            </small>
+
+                            <div class="fw-semibold">
+                                @customer.Name @customer.SurName
+                            </div>
+
+                        </div>
+
+
+                        <div class="mb-3">
+
+                            <small class="text-muted">
+                                E-posta
+                            </small>
+
+                            <div>
+                                @customer.Email
+                            </div>
+
+                        </div>
+
+
+                        <div class="mb-3">
+
+                            <small class="text-muted">
+                                Telefon
+                            </small>
+
+                            <div>
+                                @customer.Phone
+                            </div>
+
+                        </div>
+
+
+                        <div class="mb-3">
+
+                            <small class="text-muted">
+                                TC Kimlik No
+                            </small>
+
+                            <div>
+                                @customer.IdentityNumber
+                            </div>
+
+                        </div>
+
+
+                        <div class="mb-3">
+
+                            <small class="text-muted">
+                                Ehliyet No
+                            </small>
+
+                            <div>
+                                @customer.DrivingLicenseNumber
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <small class="text-muted">
+                                Ehliyet Tarihi
+                            </small>
+
+                            <div>
+                                @customer.DrivingLicenseDate.ToString("dd.MM.yyyy")
+                            </div>
+
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">
+                            Müşteri bilgileri bulunamadı.
+                        </p>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- REZERVASYON -->
+
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold mb-4">
+                        Rezervasyon Bilgileri
+                    </h4>
+
+
+                    <div class="mb-3">
+
+                        <small class="text-muted">
+                            Araç
+                        </small>
+
+                        <div class="fw-semibold">
+
+                            @if (car != null)
+                            {
+                                <span>
+                                    Araç #@car.CarId
+                                </span>
+                            }
+                            else
+                            {
+                                <span>
+                                    Araç bulunamadı
+                                </span>
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <small class="text-muted">
+                            Alış Lokasyonu
+                        </small>
+
+                        <div>
+                            @(pickupBranch?.BranchName ?? "-")
+                        </div>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <small class="text-muted">
+                            İade Lokasyonu
+                        </small>
+
+                        <div>
+                            @(returnBranch?.BranchName ?? "-")
+                        </div>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <small class="text-muted">
+                            Alış Tarihi
+                        </small>
+
+                        <div>
+                            @Model.PickupDate.ToString("dd.MM.yyyy HH:mm")
+                        </div>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <small class="text-muted">
+                            İade Tarihi
+                        </small>
+
+                        <div>
+                            @Model.ReturnDate.ToString("dd.MM.yyyy HH:mm")
+                        </div>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <small class="text-muted">
+                            Toplam Tutar
+                        </small>
+
+                        <div class="fs-4 fw-bold">
+                            @Model.TotalPrice.ToString("N2") ₺
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <small class="text-muted">
+                            Durum
+                        </small>
+
+                        <div class="mt-1">
+
+                            @if (Model.Status == "Pending")
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    Bekliyor
+                                </span>
+                            }
+                            else if (Model.Status == "Approved")
+                            {
+                                <span class="badge bg-success">
+                                    Onaylandı
+                                </span>
+                            }
+                            else if (Model.Status == "Rejected")
+                            {
+                                <span class="badge bg-danger">
+                                    Reddedildi
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">
+                                    @Model.Status
+                                </span>
+                            }
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- AKSİYONLAR -->
+    @if (Model.Status == "Pending")
+    {
+        <div class="card border-0 shadow-sm mt-4">
+
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold">
+                    Rezervasyon İşlemleri
+                </h4>
+
+                <p class="text-muted">
+                    Bu rezervasyon henüz admin onayı bekliyor.
+                </p>
+
+
+                <div class="d-flex gap-2">
+
+                    <form asp-area="Admin"
+                          asp-controller="Rental"
+                          asp-action="Approve"
+                          asp-route-id="@Model.RentalId"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit"
+                                class="btn btn-success">
+
+                            ✓ Rezervasyonu Onayla
+
+                        </button>
+
+                    </form>
+
+
+                    <form asp-area="Admin"
+                          asp-controller="Rental"
+                          asp-action="Reject"
+                          asp-route-id="@Model.RentalId"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit"
+                                class="btn btn-danger">
+
+                            × Rezervasyonu Reddet
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+</div>

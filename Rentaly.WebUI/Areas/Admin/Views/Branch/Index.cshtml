@@ -1,0 +1,497 @@
+﻿
+@model List<Rentaly.EntityLayer.Entities.Branch>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Şubeler";
+
+    var branches = Model ?? new List<Rentaly.EntityLayer.Entities.Branch>();
+}
+
+<style>
+    .branch-admin {
+        padding: 10px 4px 30px;
+        color: #25253b;
+    }
+
+    .branch-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 28px;
+    }
+
+    .branch-header-content {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .branch-header-icon {
+        width: 58px;
+        height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #f59e0b, #fbbf58);
+        color: #fff;
+        font-size: 25px;
+        box-shadow: 0 8px 20px rgba(245, 158, 11, .22);
+    }
+
+    .branch-header h3 {
+        margin: 0 0 6px;
+        font-size: 25px;
+        font-weight: 800;
+        letter-spacing: -.5px;
+    }
+
+    .branch-header p {
+        margin: 0;
+        color: #88889c;
+        font-size: 13px;
+    }
+
+    .branch-add-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 12px 19px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #f59e0b, #f7b733);
+        color: #fff !important;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none !important;
+        box-shadow: 0 6px 16px rgba(245, 158, 11, .2);
+        transition: all .2s ease;
+    }
+
+        .branch-add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(245, 158, 11, .3);
+        }
+
+    .branch-overview {
+        display: flex;
+        align-items: center;
+        gap: 17px;
+        padding: 22px 25px;
+        margin-bottom: 26px;
+        border: 1px solid #fff0d2;
+        border-radius: 18px;
+        background: linear-gradient(115deg, #fff8e9, #fff 75%);
+    }
+
+    .branch-overview-icon {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        width: 53px;
+        height: 53px;
+        border-radius: 15px;
+        background: #ffedc5;
+        color: #d98a00;
+        font-size: 23px;
+    }
+
+    .branch-overview-label {
+        margin-bottom: 4px;
+        color: #85859a;
+        font-size: 12px;
+    }
+
+    .branch-overview-count {
+        color: #46371f;
+        font-size: 27px;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .branch-section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 17px;
+    }
+
+        .branch-section-heading h5 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .branch-section-heading span {
+            color: #9292a5;
+            font-size: 12px;
+        }
+
+    .branch-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 20px;
+    }
+
+    .branch-card {
+        position: relative;
+        min-width: 0;
+        overflow: hidden;
+        padding: 23px;
+        border: 1px solid #f0ece3;
+        border-radius: 19px;
+        background: #fff;
+        box-shadow: 0 5px 18px rgba(50, 45, 30, .035);
+        transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+
+        .branch-card::before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #f59e0b, #ffd27a);
+            content: "";
+        }
+
+        .branch-card:hover {
+            transform: translateY(-5px);
+            border-color: #f6dca9;
+            box-shadow: 0 14px 32px rgba(100, 75, 25, .09);
+        }
+
+    .branch-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 19px;
+    }
+
+    .branch-icon-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        border-radius: 18px;
+        background: #fff4dc;
+        color: #e49a0b;
+        font-size: 25px;
+    }
+
+    .branch-id {
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: #faf6ee;
+        color: #9b855d;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .branch-name {
+        margin: 0 0 12px;
+        color: #302e3d;
+        font-size: 19px;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .branch-city {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 17px;
+        padding: 7px 11px;
+        border-radius: 9px;
+        background: #fff7e8;
+        color: #b77908;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .branch-address-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        min-height: 65px;
+        margin-bottom: 18px;
+        padding: 13px;
+        border: 1px solid #f1f0ec;
+        border-radius: 12px;
+        background: #fcfbf9;
+    }
+
+    .branch-address-icon {
+        margin-top: 2px;
+        color: #d89a25;
+        font-size: 14px;
+    }
+
+    .branch-address-label {
+        margin-bottom: 4px;
+        color: #a0a0ad;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .branch-address {
+        color: #666577;
+        font-size: 12px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+        white-space: pre-line;
+    }
+
+    .branch-card-divider {
+        height: 1px;
+        margin-bottom: 17px;
+        background: #f1f0ec;
+    }
+
+    .branch-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .branch-action-btn {
+        display: inline-flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 10px 8px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none !important;
+        transition: all .2s ease;
+    }
+
+    .branch-edit-btn {
+        border-color: #ffedc5;
+        background: #fff5df;
+        color: #b77908 !important;
+    }
+
+        .branch-edit-btn:hover {
+            background: #f3a712;
+            color: #fff !important;
+        }
+
+    .branch-delete-btn {
+        border-color: #ffe1e3;
+        background: #fff0f1;
+        color: #e05260 !important;
+    }
+
+        .branch-delete-btn:hover {
+            background: #e05260;
+            color: #fff !important;
+        }
+
+    .branch-empty {
+        grid-column: 1 / -1;
+        padding: 65px 20px;
+        border: 1px dashed #eadfc9;
+        border-radius: 20px;
+        background: #fff;
+        text-align: center;
+    }
+
+    .branch-empty-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 75px;
+        height: 75px;
+        margin: 0 auto 18px;
+        border-radius: 23px;
+        background: #fff4dc;
+        color: #e49a0b;
+        font-size: 30px;
+    }
+
+    .branch-empty h5 {
+        margin-bottom: 8px;
+        color: #302e3d;
+        font-weight: 800;
+    }
+
+    .branch-empty p {
+        margin-bottom: 20px;
+        color: #9292a5;
+        font-size: 13px;
+    }
+
+    @@media (max-width: 576px) {
+        .branch-header {
+            align-items: stretch;
+        }
+
+            .branch-header h3 {
+                font-size: 21px;
+            }
+
+        .branch-add-btn {
+            width: 100%;
+        }
+
+        .branch-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .branch-overview {
+            padding: 18px;
+        }
+    }
+</style>
+
+<div class="container-fluid branch-admin">
+
+    <!-- Sayfa başlığı -->
+    <div class="branch-header">
+        <div class="branch-header-content">
+            <div class="branch-header-icon">
+                <i class="fas fa-building"></i>
+            </div>
+
+            <div>
+                <h3>Şube Yönetimi</h3>
+                <p>Rentaly şubelerini görüntüleyin ve yönetin.</p>
+            </div>
+        </div>
+
+        <a asp-area="Admin"
+           asp-controller="Branch"
+           asp-action="Create"
+           class="branch-add-btn">
+            <i class="fas fa-plus"></i>
+            Yeni Şube Ekle
+        </a>
+    </div>
+
+    <!-- Toplam şube sayısı -->
+    <div class="branch-overview">
+        <div class="branch-overview-icon">
+            <i class="fas fa-map-marked-alt"></i>
+        </div>
+
+        <div>
+            <div class="branch-overview-label">
+                Sistemde kayıtlı toplam şube
+            </div>
+            <div class="branch-overview-count">@branches.Count</div>
+        </div>
+    </div>
+
+    <!-- Şube kartları -->
+    <div class="branch-section-heading">
+        <h5>Kayıtlı Şubeler</h5>
+        <span>@branches.Count şube listeleniyor</span>
+    </div>
+
+    <div class="branch-grid">
+
+        @if (branches.Any())
+        {
+            foreach (var branch in branches.OrderBy(x => x.City).ThenBy(x => x.BranchName))
+            {
+                <div class="branch-card">
+
+                    <div class="branch-card-top">
+                        <div class="branch-icon-box">
+                            <i class="fas fa-location-dot"></i>
+                        </div>
+
+                        <span class="branch-id">
+                            ŞUBE #@branch.BranchId
+                        </span>
+                    </div>
+
+                    <h5 class="branch-name">
+                        @(string.IsNullOrWhiteSpace(branch.BranchName)
+                                        ? "İsimsiz Şube"
+                                        : branch.BranchName)
+                                                        </h5>
+
+                    <div class="branch-city">
+                        <i class="fas fa-map-marker-alt"></i>
+                        @(string.IsNullOrWhiteSpace(branch.City)
+                                        ? "Şehir belirtilmemiş"
+                                        : branch.City)
+                                                  </div>
+
+                    <div class="branch-address-box">
+                        <i class="fas fa-location-dot branch-address-icon"></i>
+
+                        <div>
+                            <div class="branch-address-label">Şube adresi</div>
+                            <div class="branch-address">
+                                @(string.IsNullOrWhiteSpace(branch.Address)
+                                                        ? "Adres bilgisi girilmemiş."
+                                                        : branch.Address)
+                    </div>
+                </div>
+            </div>
+
+                    <div class="branch-card-divider"></div>
+
+                    <div class="branch-actions">
+                        <a asp-area="Admin"
+                           asp-controller="Branch"
+                           asp-action="Update"
+                           asp-route-id="@branch.BranchId"
+                           class="branch-action-btn branch-edit-btn">
+                            <i class="fas fa-edit"></i>
+                            Güncelle
+                        </a>
+
+                        <a asp-area="Admin"
+                           asp-controller="Branch"
+                           asp-action="Delete"
+                           asp-route-id="@branch.BranchId"
+                           class="branch-action-btn branch-delete-btn"
+                           onclick="return confirm('Bu şubeyi silmek istediğinize emin misiniz?');">
+                            <i class="fas fa-trash"></i>
+                            Sil
+                        </a>
+                    </div>
+
+                </div>
+                }
+        }
+        else
+        {
+            <div class="branch-empty">
+                <div class="branch-empty-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+
+                <h5>Henüz şube eklenmemiş</h5>
+
+                <p>İlk şubenizi ekleyerek Rentaly şube listenizi oluşturmaya başlayın.</p>
+
+                <a asp-area="Admin"
+                   asp-controller="Branch"
+                   asp-action="Create"
+                   class="branch-add-btn">
+                    <i class="fas fa-plus"></i>
+                    İlk Şubeyi Ekle
+                </a>
+            </div>
+        }
+
+    </div>
+
+</div>

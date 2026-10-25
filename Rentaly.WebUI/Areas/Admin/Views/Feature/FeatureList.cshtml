@@ -1,0 +1,107 @@
+﻿@model List<Rentaly.EntityLayer.Entities.Feature>
+
+@{
+    ViewData["Title"] = "Özellikler";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1">Özellikler</h3>
+            <p class="text-muted mb-0">
+                Ana sayfada gösterilecek özellikleri yönetin.
+            </p>
+        </div>
+
+        <a href="/Admin/Feature/CreateFeature" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Yeni Özellik
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>İkon</th>
+                            <th>Başlık</th>
+                            <th>Açıklama</th>
+                            <th>Sıra</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var item in Model.OrderBy(x => x.Order))
+                        {
+                            <tr>
+
+                                <td>@item.FeatureId</td>
+
+                                <td>
+                                    <i class="@item.Icon"></i>
+                                </td>
+
+                                <td>
+                                    <strong>@item.Title</strong>
+                                </td>
+
+                                <td>
+                                    @item.Description
+                                </td>
+
+                                <td>
+                                    @item.Order
+                                </td>
+
+                                <td>
+                                    @if (item.Status)
+                                    {
+                                        <span class="badge bg-success">
+                                            Aktif
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            Pasif
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+
+                                    <a href="/Admin/Feature/UpdateFeature/@item.FeatureId"
+                                       class="btn btn-sm btn-warning">
+                                        Güncelle
+                                    </a>
+
+                                    <a href="/Admin/Feature/DeleteFeature/@item.FeatureId"
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Bu özellik kaydını silmek istediğinize emin misiniz?');">
+                                        Sil
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

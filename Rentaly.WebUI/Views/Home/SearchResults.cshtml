@@ -1,0 +1,95 @@
+﻿@model Rentaly.WebUI.Models.HomeViewModel
+
+@{
+    ViewData["Title"] = "Müsait Araçlar";
+}
+
+<section class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>Müsait Araçlar</h1>
+            <p>Seçtiğiniz tarih ve lokasyona uygun araçlar</p>
+        </div>
+
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+            Yeni arama
+        </a>
+    </div>
+
+    @if (Model.Cars != null && Model.Cars.Any())
+    {
+        <div class="row g-4">
+            @foreach (var car in Model.Cars)
+            {
+                var brand = Model.Brands?
+                .FirstOrDefault(x => x.BrandId == car.BrandId);
+
+                var carModel = Model.Models?
+                .FirstOrDefault(x => x.CarModelId == car.ModelId);
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <img src="@(string.IsNullOrWhiteSpace(car.ImageUrl)
+                                                             ? "/RentalyTema/images/cars/1.jpg"
+                                                             : car.ImageUrl)"
+                     class="card-img-top"
+                     style="height:220px; object-fit:contain; background:#f7f7f7;"
+                     alt="@brand?.BrandName @carModel?.ModelName"
+                     onerror="this.onerror=null;this.src='/RentalyTema/images/cars/1.jpg';" />
+
+                        <div class="card-body d-flex flex-column">
+                            <h4>
+                                @brand?.BrandName @carModel?.ModelName
+                            </h4>
+
+                            <p>
+                                <strong>Kategori:</strong>
+                                @(car.Category?.CategoryName ?? "Belirtilmemiş")
+                            </p>
+
+                            <p>
+                                <strong>Yıl:</strong> @car.Year
+                            </p>
+
+                            <p>
+                                <strong>Günlük ücret:</strong>
+                                @car.DailyPrice.ToString("N2") ₺
+                            </p>
+
+                            <div class="mt-auto">
+                                <a asp-controller="Booking"
+                                   asp-action="Index"
+                                   asp-route-carId="@car.CarId"
+                                   asp-route-pickupBranchId="@ViewBag.PickupBranchId"
+                                   asp-route-returnBranchId="@ViewBag.ReturnBranchId"
+                                   asp-route-pickupDate="@ViewBag.PickupDate"
+                                   asp-route-returnDate="@ViewBag.ReturnDate"
+                                   class="btn btn-warning w-100">
+                                    Bu aracı rezerve et
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <h3>Uygun araç bulunamadı.</h3>
+            <p>
+                Seçtiğiniz şube, tarih aralığı veya kategori için
+                uygun araç bulunamadı.
+            </p>
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="btn btn-warning">
+                Yeniden ara
+            </a>
+        </div>
+    }
+</section>

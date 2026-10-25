@@ -1,0 +1,638 @@
+﻿@model Rentaly.WebUI.Models.BookingViewModel
+
+@{
+    var car = ViewBag.Car as Rentaly.EntityLayer.Entities.Car;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Rentaly - Rezervasyon</title>
+
+    <link rel="icon"
+          href="/RentalyTema/images/icon.png"
+          type="image/gif"
+          sizes="16x16">
+
+    <link href="/RentalyTema/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/RentalyTema/css/mdb.min.css" rel="stylesheet">
+    <link href="/RentalyTema/css/plugins.css" rel="stylesheet">
+    <link href="/RentalyTema/css/style.css" rel="stylesheet">
+    <link href="/RentalyTema/css/coloring.css" rel="stylesheet">
+    <link id="colors"
+          href="/RentalyTema/css/colors/scheme-01.css"
+          rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- HEADER -->
+
+        <header class="transparent scroll-light has-topbar">
+
+            <div id="topbar" class="topbar-dark text-light">
+
+                <div class="container">
+
+                    <div class="topbar-left xs-hide">
+
+                        <div class="topbar-widget">
+                            <a href="#">
+                                <i class="fa fa-phone"></i>
+                                +90 555 555 55 55
+                            </a>
+                        </div>
+
+                        <div class="topbar-widget">
+                            <a href="mailto:contact@rentaly.com">
+                                <i class="fa fa-envelope"></i>
+                                contact@rentaly.com
+                            </a>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="container">
+
+                <div class="row">
+
+                    <div class="col-md-12">
+
+                        <div class="de-flex sm-pt10">
+
+                            <div class="de-flex-col">
+
+                                <div id="logo">
+
+                                    <a href="/">
+
+                                        <img class="logo-1"
+                                             src="/RentalyTema/images/logo-light.png"
+                                             alt="Rentaly">
+
+                                        <img class="logo-2"
+                                             src="/RentalyTema/images/logo.png"
+                                             alt="Rentaly">
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                            <div class="de-flex-col header-col-mid">
+
+                                <ul id="mainmenu">
+
+                                    <li>
+                                        <a class="menu-item" href="/">
+                                            Home
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="menu-item" href="/Car/CarList">
+                                            Cars
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="menu-item active" href="/Booking">
+                                            Booking
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="menu-item" href="/Home/About">
+                                            About Us
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="menu-item" href="/Home/Contact">
+                                            Contact
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+
+                            <div class="de-flex-col">
+
+                                <div class="menu_side_area">
+
+                                    <a href="/Login" class="btn-main">
+                                        Sign In
+                                    </a>
+
+                                    <span id="menu-btn"></span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+
+        <div class="no-bottom" id="content">
+
+            <section class="jarallax">
+
+                <img src="/RentalyTema/images/background/2.jpg"
+                     class="jarallax-img"
+                     alt="Rentaly">
+
+                <div class="container text-light">
+
+                    <div class="row">
+
+                        <div class="col-lg-12">
+
+                            <div class="spacer-double"></div>
+                            <div class="spacer-double"></div>
+
+                            <h1>
+                                Araç Kiralama
+                            </h1>
+
+                            <p>
+                                Rezervasyon bilgilerinizi girerek aracınızı kiralayabilirsiniz.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <section>
+
+                <div class="container">
+
+                    <div class="row">
+
+                        <!-- SOL TARAF -->
+
+                        <div class="col-lg-5">
+
+                            <div class="de-item">
+
+                                <div class="d-img">
+
+                                    <img src="@car?.ImageUrl"
+                                         class="img-fluid"
+                                         alt="Araç">
+
+                                </div>
+
+                                <div class="d-info">
+
+                                    <div class="d-text">
+
+                                        <h3>
+                                            Araç Bilgileri
+                                        </h3>
+
+                                        <p>
+                                            Plaka:
+                                            <strong>
+                                                @car?.PlateNumber
+                                            </strong>
+                                        </p>
+
+                                        <p>
+                                            Günlük Ücret:
+                                            <strong>
+                                                @car?.DailyPrice.ToString("N0") ₺
+                                            </strong>
+                                        </p>
+
+                                        <p>
+                                            Araç ID:
+                                            <strong>
+                                                #@car?.CarId
+                                            </strong>
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- SAĞ TARAF -->
+
+                        <div class="col-lg-7">
+
+                            <div class="p-4 rounded-3 shadow-soft">
+
+                                <h2>
+                                    Rezervasyon Bilgileri
+                                </h2>
+
+                                <p>
+                                    Lütfen aşağıdaki bilgileri eksiksiz doldurunuz.
+                                </p>
+
+                                <form asp-action="Index"
+                                      asp-controller="Booking"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           asp-for="CarId" />
+
+
+                                    <!-- KİŞİSEL BİLGİLER -->
+
+                                    <h4 class="mb-3">
+                                        Kişisel Bilgiler
+                                    </h4>
+
+                                    <div class="row">
+
+                                        <div class="col-md-6 mb20">
+
+                                            <label asp-for="Name">
+                                                Ad
+                                            </label>
+
+                                            <input asp-for="Name"
+                                                   class="form-control"
+                                                   placeholder="Adınız">
+
+                                            <span asp-validation-for="Name"
+                                                  class="text-danger">
+                                            </span>
+
+                                        </div>
+
+                                        <div class="col-md-6 mb20">
+
+                                            <label asp-for="SurName">
+                                                Soyad
+                                            </label>
+
+                                            <input asp-for="SurName"
+                                                   class="form-control"
+                                                   placeholder="Soyadınız">
+
+                                            <span asp-validation-for="SurName"
+                                                  class="text-danger">
+                                            </span>
+
+                                        </div>
+
+                                        <div class="col-md-6 mb20">
+
+                                            <label asp-for="Email">
+                                                E-posta
+                                            </label>
+
+                                            <input asp-for="Email"
+                                                   type="email"
+                                                   class="form-control"
+                                                   placeholder="ornek@email.com">
+
+                                            <span asp-validation-for="Email"
+                                                  class="text-danger">
+                                            </span>
+
+                                        </div>
+
+                                        <div class="col-md-6 mb20">
+
+                                            <label asp-for="Phone">
+                                                Telefon
+                                            </label>
+
+                                            <input asp-for="Phone"
+                                                   class="form-control"
+                                                   placeholder="0555 555 55 55">
+
+                                            <span asp-validation-for="Phone"
+                                                  class="text-danger">
+                                            </span>
+
+                                        </div>
+
+                                        <div class="col-md-12 mb20">
+
+                                            <label asp-for="IdentityNumber">
+                                                TC Kimlik No
+                                            </label>
+
+                                            <input asp-for="IdentityNumber"
+                                                   class="form-control"
+                                                   placeholder="TC Kimlik Numaranız">
+
+                                            <span asp-validation-for="IdentityNumber"
+                                                  class="text-danger">
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- KİRALAMA BİLGİLERİ -->
+
+                                    <h4 class="mb-3 mt-4">
+                                        Kiralama Bilgileri
+                                    </h4>
+
+                                    <div class="row">
+
+                                        <div class="col-md-6 mb20">
+
+                                            <label asp-for="PickupBranchId">
+                                                Alış Şubesi
+                                            </label>
+
+                                            <select asp-for="PickupBranchId"
+                                                    asp-items="ViewBag.Branches"
+                                                    class="form-control">
+
+                                                <option value="">
+                                                    Alış şubesi seçiniz
+                                                </option>
+
+                                            </select>
+
+                                            <span asp-validation-for="PickupBranchId"
+                                                  class="text-danger">
+                                            </span>
+
+                                        </div>
+
+
+                                        <div class="col-md-6 mb20">
+
+                                            <label asp-for="ReturnBranchId">
+                                                İade Şubesi
+                                            </label>
+
+                                            <select asp-for="ReturnBranchId"
+                                                    asp-items="ViewBag.Branches"
+                                                    class="form-control">
+
+                                                <option value="">
+                                                    İade şubesi seçiniz
+                                                </option>
+
+                                            </select>
+
+                                            <span asp-validation-for="ReturnBranchId"
+                                                  class="text-danger">
+                                            </span>
+
+                                        </div>
+
+
+                                        <div class="col-md-6 mb20">
+
+                                            <label asp-for="PickupDate">
+                                                Alış Tarihi
+                                            </label>
+
+                                            <input asp-for="PickupDate"
+                                                   type="datetime-local"
+                                                   class="form-control">
+
+                                            <span asp-validation-for="PickupDate"
+                                                  class="text-danger">
+                                            </span>
+
+                                        </div>
+
+
+                                        <div class="col-md-6 mb20">
+
+                                            <label asp-for="ReturnDate">
+                                                İade Tarihi
+                                            </label>
+
+                                            <input asp-for="ReturnDate"
+                                                   type="datetime-local"
+                                                   class="form-control">
+
+                                            <span asp-validation-for="ReturnDate"
+                                                  class="text-danger">
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- EHLİYET -->
+
+                                    <h4 class="mb-3 mt-4">
+                                        Ehliyet Bilgileri
+                                    </h4>
+
+                                    <div class="row">
+
+                                        <div class="col-md-6 mb20">
+
+                                            <label asp-for="DrivingLicenseNumber">
+                                                Ehliyet No
+                                            </label>
+
+                                            <input asp-for="DrivingLicenseNumber"
+                                                   class="form-control"
+                                                   placeholder="Ehliyet numarası">
+
+                                            <span asp-validation-for="DrivingLicenseNumber"
+                                                  class="text-danger">
+                                            </span>
+
+                                        </div>
+
+                                        <div class="col-md-6 mb20">
+
+                                            <label asp-for="DrivingLicenseDate">
+                                                Ehliyet Tarihi
+                                            </label>
+
+                                            <input asp-for="DrivingLicenseDate"
+                                                   type="date"
+                                                   class="form-control">
+
+                                            <span asp-validation-for="DrivingLicenseDate"
+                                                  class="text-danger">
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    @if (!ViewData.ModelState.IsValid)
+                                    {
+                                        <div class="alert alert-danger mt-3">
+
+                                            <div asp-validation-summary="All"></div>
+
+                                        </div>
+                                    }
+
+
+                                    <div class="mt-4">
+
+                                        <button type="submit"
+                                                class="btn-main">
+
+                                            Rezervasyonu Tamamla
+
+                                        </button>
+
+                                        <a href="/Car/CarList"
+                                           class="btn-main">
+
+                                            Araçlara Dön
+
+                                        </a>
+
+                                    </div>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <footer class="text-light">
+
+            <div class="container">
+
+                <div class="row g-custom-x">
+
+                    <div class="col-lg-4">
+
+                        <div class="widget">
+
+                            <h5>
+                                About Rentaly
+                            </h5>
+
+                            <p>
+                                Güvenilir araçlarla konforlu ve
+                                keyifli yolculuklar.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-lg-4">
+
+                        <div class="widget">
+
+                            <h5>
+                                Contact Info
+                            </h5>
+
+                            <p>
+                                Istanbul, Türkiye
+                            </p>
+
+                            <p>
+                                +90 555 555 55 55
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-lg-4">
+
+                        <div class="widget">
+
+                            <h5>
+                                Quick Links
+                            </h5>
+
+                            <ul>
+
+                                <li>
+                                    <a href="/">
+                                        Home
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="/Car/CarList">
+                                        Cars
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="/Booking">
+                                        Booking
+                                    </a>
+                                </li>
+
+                            </ul>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </footer>
+
+    </div>
+
+
+    <script src="/RentalyTema/js/plugins.js"></script>
+    <script src="/RentalyTema/js/designesia.js"></script>
+
+</body>
+
+</html>

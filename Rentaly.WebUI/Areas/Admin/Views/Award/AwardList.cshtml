@@ -1,0 +1,148 @@
+﻿@model List<Rentaly.EntityLayer.Entities.Award>
+
+@{
+    ViewData["Title"] = "Ödüller";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1">Ödüller</h3>
+            <p class="text-muted mb-0">
+                Ana sayfada gösterilecek ödül ve başarıları yönetin.
+            </p>
+        </div>
+
+        <a href="/Admin/Award/CreateAward" class="btn btn-primary">
+            <i class="fa fa-plus"></i>
+            Yeni Ödül
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Görsel</th>
+                            <th>Başlık</th>
+                            <th>Açıklama</th>
+                            <th>Sıra</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var item in Model.OrderBy(x => x.Order))
+                            {
+                                <tr>
+
+                                    <td>
+                                        @item.AwardId
+                                    </td>
+
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                        {
+                                            <img src="@item.ImageUrl"
+                                                 alt="@item.Title"
+                                                 style="width:60px;height:60px;object-fit:cover;border-radius:8px;" />
+                                        }
+                                        else
+                                        {
+                                            <div style="width:60px;height:60px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;">
+                                                <i class="fa fa-trophy text-muted"></i>
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <strong>@item.Title</strong>
+                                    </td>
+
+                                    <td style="max-width:350px;">
+                                        @item.Description
+                                    </td>
+
+                                    <td>
+                                        @item.Order
+                                    </td>
+
+                                    <td>
+                                        @if (item.Status)
+                                        {
+                                            <span class="badge bg-success">
+                                                Aktif
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                Pasif
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td>
+
+                                        <a href="/Admin/Award/UpdateAward/@item.AwardId"
+                                           class="btn btn-sm btn-warning">
+                                            <i class="fa fa-edit"></i>
+                                            Güncelle
+                                        </a>
+
+                                        <a href="/Admin/Award/DeleteAward/@item.AwardId"
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Bu ödül kaydını silmek istediğinize emin misiniz?');">
+                                            <i class="fa fa-trash"></i>
+                                            Sil
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+
+                                    <div class="text-muted">
+
+                                        <i class="fa fa-trophy fa-2x mb-3"></i>
+
+                                        <div class="fw-bold mb-1">
+                                            Henüz ödül bulunmuyor.
+                                        </div>
+
+                                        <div>
+                                            İlk ödül kaydınızı ekleyebilirsiniz.
+                                        </div>
+
+                                    </div>
+
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

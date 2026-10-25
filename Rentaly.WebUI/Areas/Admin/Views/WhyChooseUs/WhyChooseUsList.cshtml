@@ -1,0 +1,166 @@
+@model List<Rentaly.EntityLayer.Entities.WhyChooseUs>
+
+@{
+    ViewData["Title"] = "Neden Bizi Seçmelisiniz?";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h3 class="mb-1">Neden Bizi Seçmelisiniz?</h3>
+
+            <p class="text-muted mb-0">
+                Ana sayfada gösterilecek neden bizi seçmelisiniz içeriklerini yönetin.
+            </p>
+        </div>
+
+        <a href="/Admin/WhyChooseUs/CreateWhyChooseUs"
+           class="btn btn-primary">
+
+            <i class="fa fa-plus"></i>
+            Yeni İçerik
+
+        </a>
+
+    </div>
+
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead>
+
+                        <tr>
+                            <th>#</th>
+                            <th>İkon</th>
+                            <th>Başlık</th>
+                            <th>Açıklama</th>
+                            <th>Sıra</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model.OrderBy(x => x.Order))
+                            {
+                                <tr>
+
+                                    <td>
+                                        @item.WhyChooseUsId
+                                    </td>
+
+
+                                    <td>
+
+                                        @if (!string.IsNullOrEmpty(item.Icon))
+                                        {
+                                            <i class="@item.Icon fa-lg"></i>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                İkon yok
+                                            </span>
+                                        }
+
+                                    </td>
+
+
+                                    <td>
+                                        <strong>
+                                            @item.Title
+                                        </strong>
+                                    </td>
+
+
+                                    <td>
+                                        @item.Description
+                                    </td>
+
+
+                                    <td>
+                                        @item.Order
+                                    </td>
+
+
+                                    <td>
+
+                                        @if (item.Status)
+                                        {
+                                            <span class="badge bg-success">
+                                                Aktif
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                Pasif
+                                            </span>
+                                        }
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <a href="/Admin/WhyChooseUs/UpdateWhyChooseUs/@item.WhyChooseUsId"
+                                           class="btn btn-sm btn-warning">
+
+                                            <i class="fa fa-edit"></i>
+                                            Güncelle
+
+                                        </a>
+
+
+                                        <a href="/Admin/WhyChooseUs/DeleteWhyChooseUs/@item.WhyChooseUsId"
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Bu kaydı silmek istediğinize emin misiniz?');">
+
+                                            <i class="fa fa-trash"></i>
+                                            Sil
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+
+                                <td colspan="7"
+                                    class="text-center text-muted py-4">
+
+                                    Henüz Neden Bizi Seçmelisiniz içeriği bulunmuyor.
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

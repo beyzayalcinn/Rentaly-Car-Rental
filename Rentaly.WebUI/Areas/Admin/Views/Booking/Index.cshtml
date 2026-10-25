@@ -1,0 +1,546 @@
+﻿
+@model List<Rentaly.EntityLayer.Entities.Rental>
+@using System.Linq
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Rezervasyon Yönetimi";
+
+    var reservations = Model ?? new List<Rentaly.EntityLayer.Entities.Rental>();
+
+    int totalReservations = reservations.Count;
+    int pendingReservations = reservations.Count(x => x.Status == "Pending");
+    int approvedReservations = reservations.Count(x => x.Status == "Approved");
+    int rejectedReservations = reservations.Count(x => x.Status == "Rejected");
+}
+
+<style>
+    .booking-page {
+        padding: 8px 0 30px;
+        color: #263248;
+    }
+
+    .booking-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 26px;
+    }
+
+    .booking-heading h2 {
+        font-size: 27px;
+        font-weight: 750;
+        letter-spacing: -0.7px;
+        margin: 0 0 7px;
+        color: #17243b;
+    }
+
+    .booking-heading p {
+        margin: 0;
+        color: #8290a5;
+        font-size: 14px;
+    }
+
+    .booking-heading-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff0df;
+        color: #e58a28;
+        font-size: 21px;
+        flex-shrink: 0;
+    }
+
+    .booking-title-group {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .booking-stat {
+        height: 100%;
+        background: #fff;
+        border: 1px solid #edf0f5;
+        border-radius: 16px;
+        padding: 21px;
+        box-shadow: 0 5px 20px rgba(25, 42, 70, .035);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .booking-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 26px rgba(25, 42, 70, .07);
+    }
+
+    .booking-stat-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+    }
+
+    .booking-stat-label {
+        color: #7c899c;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .booking-stat-icon {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 13px;
+        font-size: 17px;
+    }
+
+    .booking-stat-number {
+        color: #17243b;
+        font-size: 30px;
+        line-height: 1.2;
+        font-weight: 750;
+    }
+
+    .booking-stat-note {
+        color: #96a0af;
+        font-size: 12px;
+        margin-top: 7px;
+    }
+
+    .stat-purple { background: #f0ebff; color: #7956d8; }
+    .stat-orange { background: #fff1df; color: #e38a25; }
+    .stat-green { background: #e1f7ed; color: #169b67; }
+    .stat-red { background: #ffebed; color: #dc5261; }
+
+    .booking-panel {
+        background: #fff;
+        border: 1px solid #edf0f5;
+        border-radius: 17px;
+        box-shadow: 0 5px 22px rgba(25, 42, 70, .04);
+        overflow: hidden;
+        margin-top: 24px;
+    }
+
+    .booking-panel-header {
+        padding: 23px 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #edf0f5;
+    }
+
+    .booking-panel-header h5 {
+        margin: 0 0 5px;
+        color: #202d43;
+        font-size: 17px;
+        font-weight: 750;
+    }
+
+    .booking-panel-header p {
+        margin: 0;
+        color: #8b96a8;
+        font-size: 13px;
+    }
+
+    .booking-count {
+        background: #f2f4f8;
+        color: #5f6d82;
+        padding: 7px 12px;
+        border-radius: 9px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .booking-table-wrap {
+        overflow-x: auto;
+    }
+
+    .booking-table {
+        width: 100%;
+        min-width: 900px;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 0;
+    }
+
+    .booking-table thead th {
+        background: #f8f9fc;
+        color: #8290a5;
+        padding: 15px 19px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        font-weight: 750;
+        border-bottom: 1px solid #edf0f5;
+        white-space: nowrap;
+    }
+
+    .booking-table tbody td {
+        padding: 17px 19px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f0f2f6;
+        color: #4d5b70;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    .booking-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .booking-table tbody tr {
+        transition: background .15s ease;
+    }
+
+    .booking-table tbody tr:hover {
+        background: #fbfcff;
+    }
+
+    .booking-id {
+        font-weight: 750;
+        color: #7956d8;
+    }
+
+    .booking-entity {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #344258;
+        font-weight: 650;
+    }
+
+    .booking-mini-icon {
+        display: inline-flex;
+        width: 29px;
+        height: 29px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9px;
+        background: #f1f4f9;
+        color: #7b879a;
+        font-size: 12px;
+    }
+
+    .booking-date {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .booking-date i {
+        color: #a0aabb;
+        font-size: 13px;
+    }
+
+    .booking-price {
+        font-weight: 750;
+        color: #26364e;
+    }
+
+    .booking-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 10px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 750;
+    }
+
+    .booking-status::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        display: inline-block;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .status-pending { background: #fff4df; color: #c78317; }
+    .status-approved { background: #e4f8ee; color: #168657; }
+    .status-rejected { background: #ffebed; color: #ce4655; }
+    .status-cancelled { background: #eef0f4; color: #667085; }
+    .status-other { background: #edf2ff; color: #5269b5; }
+
+    .booking-detail-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 8px 12px;
+        border: 1px solid #e7e9f0;
+        border-radius: 9px;
+        background: #fff;
+        color: #59677d;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+        transition: all .2s ease;
+    }
+
+    .booking-detail-btn:hover {
+        background: #7956d8;
+        border-color: #7956d8;
+        color: #fff;
+    }
+
+    .booking-empty {
+        padding: 55px 20px !important;
+        text-align: center;
+        white-space: normal !important;
+    }
+
+    .booking-empty-icon {
+        width: 62px;
+        height: 62px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto 16px;
+        border-radius: 19px;
+        background: #f3efff;
+        color: #7956d8;
+        font-size: 24px;
+    }
+
+    .booking-empty h5 {
+        color: #344258;
+        font-size: 16px;
+        font-weight: 750;
+        margin-bottom: 7px;
+    }
+
+    .booking-empty p {
+        color: #8b96a8;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    @@media (max-width: 767px) {
+        .booking-heading h2 {
+            font-size: 23px;
+        }
+
+        .booking-stat {
+            padding: 17px;
+        }
+
+        .booking-stat-number {
+            font-size: 25px;
+        }
+
+        .booking-panel-header {
+            padding: 18px;
+        }
+    }
+</style>
+
+<div class="container-fluid booking-page">
+
+    <div class="booking-heading">
+        <div class="booking-title-group">
+            <div class="booking-heading-icon">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div>
+                <h2>Rezervasyon Yönetimi</h2>
+                <p>Tüm araç kiralama taleplerini buradan takip edebilirsin.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="booking-stat">
+                <div class="booking-stat-top">
+                    <span class="booking-stat-label">Toplam Rezervasyon</span>
+                    <span class="booking-stat-icon stat-purple">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </span>
+                </div>
+                <div class="booking-stat-number">@totalReservations</div>
+                <div class="booking-stat-note">Sistemdeki tüm kayıtlar</div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="booking-stat">
+                <div class="booking-stat-top">
+                    <span class="booking-stat-label">Bekleyen</span>
+                    <span class="booking-stat-icon stat-orange">
+                        <i class="fa-solid fa-clock"></i>
+                    </span>
+                </div>
+                <div class="booking-stat-number">@pendingReservations</div>
+                <div class="booking-stat-note">İşlem bekleyen talepler</div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="booking-stat">
+                <div class="booking-stat-top">
+                    <span class="booking-stat-label">Onaylanan</span>
+                    <span class="booking-stat-icon stat-green">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </span>
+                </div>
+                <div class="booking-stat-number">@approvedReservations</div>
+                <div class="booking-stat-note">Onaylanmış rezervasyonlar</div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="booking-stat">
+                <div class="booking-stat-top">
+                    <span class="booking-stat-label">Reddedilen</span>
+                    <span class="booking-stat-icon stat-red">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </span>
+                </div>
+                <div class="booking-stat-number">@rejectedReservations</div>
+                <div class="booking-stat-note">Reddedilmiş talepler</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="booking-panel">
+
+        <div class="booking-panel-header">
+            <div>
+                <h5>Rezervasyon Listesi</h5>
+                <p>Müşterilerin oluşturduğu kiralama kayıtları</p>
+            </div>
+            <span class="booking-count">
+                <i class="fa-solid fa-list-check me-1"></i>
+                @totalReservations kayıt
+            </span>
+        </div>
+
+        <div class="booking-table-wrap">
+            <table class="booking-table">
+
+                <thead>
+                    <tr>
+                        <th>Rezervasyon</th>
+                        <th>Araç</th>
+                        <th>Müşteri</th>
+                        <th>Alış Tarihi</th>
+                        <th>İade Tarihi</th>
+                        <th>Toplam Tutar</th>
+                        <th>Durum</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (reservations.Any())
+                    {
+                        foreach (var rental in reservations.OrderByDescending(x => x.RentalId))
+                        {
+                            var statusClass = rental.Status switch
+                            {
+                                "Pending" => "status-pending",
+                                "Approved" => "status-approved",
+                                "Rejected" => "status-rejected",
+                                "Cancelled" => "status-cancelled",
+                                _ => "status-other"
+                            };
+
+                            var statusText = rental.Status switch
+                            {
+                                "Pending" => "Bekliyor",
+                                "Approved" => "Onaylandı",
+                                "Rejected" => "Reddedildi",
+                                "Cancelled" => "İptal edildi",
+                                _ => rental.Status ?? "Bilinmiyor"
+                            };
+
+                            <tr>
+                                <td>
+                                    <span class="booking-id">#@rental.RentalId</span>
+                                </td>
+
+                                <td>
+                                    <span class="booking-entity">
+                                        <span class="booking-mini-icon">
+                                            <i class="fa-solid fa-car"></i>
+                                        </span>
+                                        @rental.CarId
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="booking-entity">
+                                        <span class="booking-mini-icon">
+                                            <i class="fa-solid fa-user"></i>
+                                        </span>
+                                        @rental.CustomerId
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="booking-date">
+                                        <i class="fa-regular fa-calendar"></i>
+                                        @rental.PickupDate.ToString("dd.MM.yyyy HH:mm")
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="booking-date">
+                                        <i class="fa-regular fa-calendar-check"></i>
+                                        @rental.ReturnDate.ToString("dd.MM.yyyy HH:mm")
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="booking-price">
+                                        @rental.TotalPrice.ToString("N0") ₺
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="booking-status @statusClass">
+                                        @statusText
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <a href="@Url.Action("Detail", "Booking", new { area = "Admin", id = rental.RentalId })"
+                                       class="booking-detail-btn">
+                                        <i class="fa-regular fa-eye"></i>
+                                        Detay
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="booking-empty">
+                                <div class="booking-empty-icon">
+                                    <i class="fa-regular fa-calendar-xmark"></i>
+                                </div>
+                                <h5>Henüz rezervasyon yok</h5>
+                                <p>Yeni rezervasyonlar oluşturulduğunda burada görüntülenecek.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+</div>

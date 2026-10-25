@@ -1,0 +1,381 @@
+﻿@model Rentaly.EntityLayer.Entities.Car
+
+@{
+    ViewData["Title"] = "Araç Güncelle";
+
+    var brands =
+        ViewBag.Brands as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+
+    var allModels =
+      ViewBag.AllModels as List<Rentaly.EntityLayer.Entities.CarModel>
+      ?? new List<Rentaly.EntityLayer.Entities.CarModel>();
+
+    var categories =
+        ViewBag.Categories as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+
+    var branches =
+        ViewBag.Branches as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+}
+
+
+<div class="container-fluid">
+
+    <div class="mb-4">
+
+        <h2 class="fw-bold">
+            Araç Güncelle
+        </h2>
+
+        <p class="text-muted">
+            Araç bilgilerini düzenleyin.
+        </p>
+
+    </div>
+
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-warning">
+
+            <h5 class="mb-0">
+                @Model.PlateNumber - Araç Bilgileri
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <form asp-area="Admin"
+                  asp-controller="Car"
+                  asp-action="Update"
+                  method="post">
+
+                <input type="hidden"
+                       asp-for="CarId" />
+
+
+                <div class="row">
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Plaka
+                        </label>
+
+                        <input asp-for="PlateNumber"
+                               class="form-control" />
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            VIN
+                        </label>
+
+                        <input asp-for="VIN"
+                               class="form-control" />
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Marka
+                        </label>
+
+                        <select asp-for="BrandId"
+                                asp-items="brands"
+                                class="form-select">
+
+                            <option value="">
+                                Marka Seçiniz
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">Model</label>
+
+                        <select asp-for="ModelId" class="form-select" id="ModelId">
+
+                            <option value="">Önce marka seçiniz</option>
+
+                            @foreach (var item in allModels)
+                            {
+                                <option value="@item.CarModelId"
+                                        data-brand-id="@item.BrandId"
+                                        selected="@(item.CarModelId == Model.ModelId ? "selected" : null)">
+                                    @item.ModelName
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Kategori
+                        </label>
+
+                        <select asp-for="CategoryId"
+                                asp-items="categories"
+                                class="form-select">
+
+                            <option value="">
+                                Kategori Seçiniz
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Lokasyon
+                        </label>
+
+                        <select asp-for="BranchId"
+                                asp-items="branches"
+                                class="form-select">
+
+                            <option value="">
+                                Şube Seçiniz
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            Yıl
+                        </label>
+
+                        <input asp-for="Year"
+                               type="number"
+                               class="form-control" />
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            Kilometre
+                        </label>
+
+                        <input asp-for="Kilometer"
+                               type="number"
+                               class="form-control" />
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            Yakıt
+                        </label>
+
+                        <input asp-for="FuelType"
+                               class="form-control" />
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Günlük Fiyat
+                        </label>
+
+                        <input asp-for="DailyPrice"
+                               type="number"
+                               step="0.01"
+                               class="form-control" />
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Depozito
+                        </label>
+
+                        <input asp-for="DepositAmount"
+                               type="number"
+                               step="0.01"
+                               class="form-control" />
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Koltuk Sayısı
+                        </label>
+
+                        <input asp-for="SeatCount"
+                               type="number"
+                               class="form-control" />
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Bagaj Sayısı
+                        </label>
+
+                        <input asp-for="LuggageCount"
+                               type="number"
+                               class="form-control" />
+
+                    </div>
+
+
+                    <div class="col-md-12 mb-3">
+
+                        <label class="form-label">
+                            Resim URL
+                        </label>
+
+                        <input asp-for="ImageUrl"
+                               class="form-control" />
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <div class="form-check">
+
+                            <input asp-for="IsAvailable"
+                                   class="form-check-input" />
+
+                            <label class="form-check-label">
+                                Araç Müsait
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <div class="form-check">
+
+                            <input asp-for="IsActive"
+                                   class="form-check-input" />
+
+                            <label class="form-check-label">
+                                Araç Aktif
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <hr />
+
+
+                <div class="d-flex justify-content-between">
+
+                    <a href="/Admin/Car"
+                       class="btn btn-secondary">
+
+                        Geri
+
+                    </a>
+
+
+                    <button type="submit"
+                            class="btn btn-warning">
+
+                        <i class="fa fa-save"></i>
+                        Değişiklikleri Kaydet
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const brandSelect = document.getElementById("BrandId");
+        const modelSelect = document.getElementById("ModelId");
+
+        if (!brandSelect || !modelSelect) return;
+
+        const allOptions = Array.from(modelSelect.options)
+            .filter(option => option.value !== "")
+            .map(option => option.cloneNode(true));
+
+        function filterModels(resetModel) {
+            const brandId = brandSelect.value;
+            const previousModelId = resetModel ? "" : modelSelect.value;
+
+            modelSelect.innerHTML = "";
+
+            const placeholder = document.createElement("option");
+            placeholder.value = "";
+            placeholder.textContent = brandId
+                ? "Model Seçiniz"
+                : "Önce marka seçiniz";
+
+            modelSelect.appendChild(placeholder);
+
+            allOptions.forEach(option => {
+                if (option.dataset.brandId === brandId) {
+                    modelSelect.appendChild(option.cloneNode(true));
+                }
+            });
+
+            const matchingModel = Array.from(modelSelect.options)
+                .find(option => option.value === previousModelId);
+
+            if (matchingModel) {
+                modelSelect.value = previousModelId;
+            } else {
+                modelSelect.value = "";
+            }
+        }
+
+        brandSelect.addEventListener("change", function () {
+            filterModels(true);
+        });
+
+        filterModels(false);
+    });
+</script>
+
+

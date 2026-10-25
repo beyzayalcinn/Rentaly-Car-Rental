@@ -1,0 +1,103 @@
+﻿@model Rentaly.EntityLayer.Entities.OurFuture
+
+@{
+    ViewData["Title"] = "Our Future Güncelle";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1">Our Future Güncelle</h3>
+            <p class="text-muted mb-0">
+                Mevcut Our Future içeriğini düzenleyin.
+            </p>
+        </div>
+
+        <a href="/Admin/OurFuture/OurFutureList" class="btn btn-secondary">
+            <i class="fa fa-arrow-left"></i> Listeye Dön
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form method="post" action="/Admin/OurFuture/UpdateOurFuture">
+
+                <input type="hidden" asp-for="OurFutureId" />
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Başlık</label>
+
+                        <input type="text"
+                               asp-for="Title"
+                               class="form-control"
+                               placeholder="Başlık" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">İkon</label>
+
+                        <input type="text"
+                               asp-for="Icon"
+                               class="form-control"
+                               placeholder="Örn: fa fa-car" />
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Açıklama</label>
+
+                        <textarea asp-for="Description"
+                                  class="form-control"
+                                  rows="5"
+                                  placeholder="Açıklama"></textarea>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Sıra</label>
+
+                        <input type="number"
+                               asp-for="Order"
+                               class="form-control"
+                               min="1" />
+                    </div>
+
+                    <div class="col-md-6 mb-3 d-flex align-items-end">
+                        <div class="form-check mb-2">
+
+                            <input type="checkbox"
+                                   asp-for="Status"
+                                   class="form-check-input" />
+
+                            <label class="form-check-label">
+                                Aktif olarak göster
+                            </label>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a href="/Admin/OurFuture/OurFutureList"
+                       class="btn btn-light">
+                        İptal
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-warning">
+                        <i class="fa fa-edit"></i>
+                        Güncelle
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

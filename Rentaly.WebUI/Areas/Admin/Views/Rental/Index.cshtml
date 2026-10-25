@@ -1,0 +1,1005 @@
+﻿@model List<Rentaly.EntityLayer.Entities.Rental>
+@using System.Linq
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Rezervasyon Yönetimi";
+
+    var reservations = Model ?? new List<Rentaly.EntityLayer.Entities.Rental>();
+    var cars = ViewBag.Cars as IEnumerable<Rentaly.EntityLayer.Entities.Car>;
+    var customers = ViewBag.Customers as IEnumerable<Rentaly.DtoLayer.CustomerDtos.ResultCustomerDto>;
+    var branches = ViewBag.Branches as IEnumerable<Rentaly.EntityLayer.Entities.Branch>;
+
+    var totalCount = reservations.Count;
+    var pendingCount = reservations.Count(x => x.Status == "Pending");
+    var approvedCount = reservations.Count(x => x.Status == "Approved");
+    var rejectedCount = reservations.Count(x => x.Status == "Rejected");
+    var cancelledCount = reservations.Count(x => x.Status == "Cancelled");
+}
+
+<style>
+    .reservation-page {
+        --rp-ink: #19263d;
+        --rp-muted: #8290a5;
+        --rp-line: #e9edf4;
+        --rp-purple: #7956d8;
+        padding: 12px 0 35px;
+        color: var(--rp-ink);
+    }
+
+        .reservation-page * {
+            box-sizing: border-box;
+        }
+
+    .rp-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-bottom: 27px;
+    }
+
+    .rp-heading-main {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .rp-heading-icon {
+        width: 58px;
+        height: 58px;
+        display: grid;
+        place-items: center;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #7956d8, #a48af0);
+        color: white;
+        font-size: 23px;
+        box-shadow: 0 8px 22px #7956d82b;
+    }
+
+    .rp-eyebrow {
+        color: var(--rp-purple);
+        font-size: 10px;
+        letter-spacing: 1.8px;
+        font-weight: 850;
+        margin-bottom: 5px;
+    }
+
+    .rp-title {
+        font-size: clamp(23px, 3vw, 31px);
+        font-weight: 850;
+        letter-spacing: -.8px;
+        margin: 0 0 5px;
+    }
+
+    .rp-subtitle {
+        margin: 0;
+        color: var(--rp-muted);
+        font-size: 13px;
+    }
+
+    .rp-live {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #e5f8ed;
+        color: #168657;
+        padding: 9px 13px;
+        border-radius: 11px;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .rp-live-dot {
+        width: 7px;
+        height: 7px;
+        background: #20a568;
+        border-radius: 50%;
+    }
+
+    .rp-alert {
+        border: 0;
+        border-radius: 13px;
+        padding: 14px 18px;
+        font-size: 13px;
+        margin-bottom: 18px;
+    }
+
+    .rp-stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 27px;
+    }
+
+    .rp-stat {
+        position: relative;
+        overflow: hidden;
+        background: white;
+        border: 1px solid var(--rp-line);
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: 0 5px 22px #19263d08;
+        transition: transform .2s, box-shadow .2s;
+    }
+
+        .rp-stat:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px #19263d10;
+        }
+
+        .rp-stat::after {
+            content: "";
+            position: absolute;
+            height: 3px;
+            left: 0;
+            right: 0;
+            top: 0;
+            background: var(--stat-color);
+        }
+
+    .rp-stat-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 17px;
+    }
+
+    .rp-stat-label {
+        color: var(--rp-muted);
+        font-size: 12px;
+        font-weight: 750;
+    }
+
+    .rp-stat-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 13px;
+        display: grid;
+        place-items: center;
+        background: var(--stat-bg);
+        color: var(--stat-color);
+        font-size: 17px;
+        flex-shrink: 0;
+    }
+
+    .rp-stat-value {
+        font-size: 31px;
+        line-height: 1.1;
+        letter-spacing: -1px;
+        font-weight: 900;
+        margin: 0;
+    }
+
+    .rp-stat-note {
+        color: #98a1b0;
+        font-size: 11px;
+        margin-top: 8px;
+    }
+
+    .rp-stat-purple {
+        --stat-color: #7956d8;
+        --stat-bg: #f0ebff;
+    }
+
+    .rp-stat-orange {
+        --stat-color: #d88a20;
+        --stat-bg: #fff2df;
+    }
+
+    .rp-stat-green {
+        --stat-color: #168657;
+        --stat-bg: #e3f8ed;
+    }
+
+    .rp-stat-red {
+        --stat-color: #d94b5b;
+        --stat-bg: #ffebed;
+    }
+
+    .rp-panel {
+        background: white;
+        border: 1px solid var(--rp-line);
+        border-radius: 19px;
+        overflow: hidden;
+        box-shadow: 0 6px 25px #19263d07;
+    }
+
+    .rp-panel-head {
+        padding: 23px 24px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 15px;
+        border-bottom: 1px solid var(--rp-line);
+    }
+
+    .rp-panel-title {
+        font-size: 18px;
+        font-weight: 850;
+        margin: 0 0 5px;
+    }
+
+    .rp-panel-desc {
+        color: var(--rp-muted);
+        font-size: 12px;
+        margin: 0;
+    }
+
+    .rp-total {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: #f1edff;
+        color: #7352cb;
+        border-radius: 10px;
+        padding: 9px 12px;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .rp-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 18px 24px;
+        background: #fcfcfe;
+        border-bottom: 1px solid var(--rp-line);
+    }
+
+    .rp-search-wrap {
+        position: relative;
+        flex: 1;
+        min-width: 210px;
+        max-width: 360px;
+    }
+
+    .rp-search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #98a1b0;
+        pointer-events: none;
+    }
+
+    .rp-search {
+        width: 100%;
+        min-height: 43px;
+        border: 1px solid #e2e7ef;
+        background: white;
+        border-radius: 12px;
+        padding: 10px 13px 10px 39px;
+        outline: none;
+        color: var(--rp-ink);
+        font-size: 12px;
+    }
+
+        .rp-search:focus, .rp-filter:focus {
+            border-color: #a48af0;
+            box-shadow: 0 0 0 3px #7956d817;
+        }
+
+    .rp-filter {
+        min-height: 43px;
+        border: 1px solid #e2e7ef;
+        background: white;
+        border-radius: 12px;
+        padding: 9px 12px;
+        outline: none;
+        font-size: 12px;
+        color: #536176;
+        min-width: 155px;
+    }
+
+    .rp-table-wrap {
+        overflow-x: auto;
+    }
+
+    .rp-table {
+        width: 100%;
+        min-width: 1160px;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 0;
+    }
+
+        .rp-table thead th {
+            padding: 15px 16px;
+            background: #f8f9fc;
+            color: #8490a3;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .7px;
+            font-weight: 850;
+            white-space: nowrap;
+            border-bottom: 1px solid var(--rp-line);
+        }
+
+        .rp-table tbody td {
+            padding: 17px 16px;
+            border-bottom: 1px solid #f0f2f6;
+            font-size: 12px;
+            color: #536176;
+            vertical-align: middle;
+        }
+
+        .rp-table tbody tr {
+            transition: background .15s;
+        }
+
+            .rp-table tbody tr:hover {
+                background: #fbfaff;
+            }
+
+            .rp-table tbody tr:last-child td {
+                border-bottom: 0;
+            }
+
+    .rp-booking-id {
+        display: inline-block;
+        background: #f0ebff;
+        color: #7956d8;
+        padding: 7px 9px;
+        border-radius: 8px;
+        font-weight: 850;
+        white-space: nowrap;
+    }
+
+    .rp-customer {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 175px;
+    }
+
+    .rp-avatar {
+        width: 39px;
+        height: 39px;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        border-radius: 13px;
+        background: linear-gradient(135deg, #f0ebff, #e5eaff);
+        color: #7352cb;
+        font-size: 12px;
+        font-weight: 900;
+    }
+
+    .rp-customer-name {
+        color: #29364b;
+        font-size: 12px;
+        font-weight: 800;
+        margin-bottom: 4px;
+    }
+
+    .rp-customer-email {
+        color: #98a1b0;
+        font-size: 10px;
+        overflow-wrap: anywhere;
+    }
+
+    .rp-car {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        min-width: 100px;
+        color: #344258;
+        font-weight: 800;
+    }
+
+    .rp-car-icon {
+        width: 35px;
+        height: 35px;
+        display: grid;
+        place-items: center;
+        border-radius: 11px;
+        background: #edf3ff;
+        color: #5379c7;
+        flex-shrink: 0;
+    }
+
+    .rp-branch {
+        display: flex;
+        gap: 7px;
+        max-width: 155px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+        .rp-branch i {
+            color: #9aa5b6;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+    .rp-dates {
+        min-width: 155px;
+        line-height: 1.7;
+    }
+
+    .rp-date-start {
+        color: #344258;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    .rp-date-end {
+        color: #98a1b0;
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    .rp-price {
+        font-size: 13px;
+        font-weight: 900;
+        color: #168657;
+        white-space: nowrap;
+    }
+
+    .rp-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 10px;
+        border-radius: 9px;
+        font-size: 10px;
+        font-weight: 850;
+        white-space: nowrap;
+    }
+
+        .rp-status::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            background: currentColor;
+            border-radius: 50%;
+        }
+
+    .rp-pending {
+        background: #fff3df;
+        color: #bd7b17;
+    }
+
+    .rp-approved {
+        background: #e3f8ed;
+        color: #168657;
+    }
+
+    .rp-rejected {
+        background: #ffebed;
+        color: #ce4655;
+    }
+
+    .rp-cancelled {
+        background: #eef0f4;
+        color: #667085;
+    }
+
+    .rp-other {
+        background: #edf2ff;
+        color: #5269b5;
+    }
+
+    .rp-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-width: 205px;
+    }
+
+    .rp-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 8px 9px;
+        border: 1px solid transparent;
+        border-radius: 9px;
+        font-size: 10px;
+        font-weight: 850;
+        line-height: 1.2;
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: .18s ease;
+    }
+
+    .rp-detail {
+        background: #f0ebff;
+        color: #7352cb;
+        border-color: #e6dfff;
+    }
+
+        .rp-detail:hover {
+            background: #7956d8;
+            color: white;
+        }
+
+    .rp-approve {
+        background: #e5f8ed;
+        color: #168657;
+        border-color: #d4f0e0;
+    }
+
+        .rp-approve:hover {
+            background: #168657;
+            color: white;
+        }
+
+    .rp-reject {
+        background: #fff0f0;
+        color: #cf4655;
+        border-color: #ffe0e3;
+    }
+
+        .rp-reject:hover {
+            background: #cf4655;
+            color: white;
+        }
+
+    .rp-delete {
+        background: white;
+        color: #7b879a;
+        border-color: #e7e9f0;
+    }
+
+        .rp-delete:hover {
+            background: #cf4655;
+            color: white;
+            border-color: #cf4655;
+        }
+
+    .rp-empty {
+        text-align: center;
+        padding: 55px 20px !important;
+    }
+
+    .rp-empty-icon {
+        width: 70px;
+        height: 70px;
+        display: grid;
+        place-items: center;
+        margin: 0 auto 16px;
+        border-radius: 22px;
+        background: #f0ebff;
+        color: #7956d8;
+        font-size: 27px;
+    }
+
+    .rp-empty h3 {
+        font-size: 18px;
+        font-weight: 850;
+        color: #344258;
+    }
+
+    .rp-empty p {
+        color: #8b96a8;
+        font-size: 12px;
+        margin: 0;
+    }
+
+    .rp-no-results {
+        display: none;
+        text-align: center;
+        padding: 28px 15px;
+        color: #8290a5;
+        font-size: 13px;
+    }
+
+    @@media (max-width: 1050px) {
+        .rp-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .reservation-page {
+            padding-top: 4px;
+        }
+
+        .rp-heading-icon {
+            width: 48px;
+            height: 48px;
+        }
+
+        .rp-title {
+            font-size: 23px;
+        }
+
+        .rp-stats {
+            gap: 10px;
+        }
+
+        .rp-stat {
+            padding: 14px;
+        }
+
+        .rp-stat-value {
+            font-size: 26px;
+        }
+
+        .rp-stat-label {
+            font-size: 11px;
+        }
+
+        .rp-stat-icon {
+            width: 35px;
+            height: 35px;
+        }
+
+        .rp-panel-head, .rp-toolbar {
+            padding: 16px;
+        }
+
+        .rp-search-wrap {
+            max-width: none;
+            width: 100%;
+        }
+
+        .rp-filter {
+            flex: 1;
+            min-width: 0;
+        }
+    }
+
+    @@media (max-width: 360px) {
+        .rp-stats {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="container-fluid reservation-page">
+
+    <header class="rp-heading">
+        <div class="rp-heading-main">
+            <div class="rp-heading-icon">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div>
+                <div class="rp-eyebrow">RENTALY • YÖNETİM PANELİ</div>
+                <h1 class="rp-title">Rezervasyon Yönetimi</h1>
+                <p class="rp-subtitle">Rezervasyonları inceleyin ve kiralama sürecini yönetin.</p>
+            </div>
+        </div>
+
+        <span class="rp-live">
+            <span class="rp-live-dot"></span>
+            Yönetim paneli
+        </span>
+    </header>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rp-alert" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show rp-alert" role="alert">
+            <i class="fa-solid fa-circle-exclamation me-2"></i>
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+        </div>
+    }
+
+    <section class="rp-stats">
+        <div class="rp-stat rp-stat-purple">
+            <div class="rp-stat-top">
+                <span class="rp-stat-label">Toplam Rezervasyon</span>
+                <span class="rp-stat-icon"><i class="fa-solid fa-calendar-days"></i></span>
+            </div>
+            <h2 class="rp-stat-value">@totalCount</h2>
+            <div class="rp-stat-note">Tüm rezervasyon kayıtları</div>
+        </div>
+
+        <div class="rp-stat rp-stat-orange">
+            <div class="rp-stat-top">
+                <span class="rp-stat-label">Onay Bekleyen</span>
+                <span class="rp-stat-icon"><i class="fa-solid fa-clock"></i></span>
+            </div>
+            <h2 class="rp-stat-value">@pendingCount</h2>
+            <div class="rp-stat-note">İşlem bekleyen talepler</div>
+        </div>
+
+        <div class="rp-stat rp-stat-green">
+            <div class="rp-stat-top">
+                <span class="rp-stat-label">Onaylanan</span>
+                <span class="rp-stat-icon"><i class="fa-solid fa-circle-check"></i></span>
+            </div>
+            <h2 class="rp-stat-value">@approvedCount</h2>
+            <div class="rp-stat-note">Onaylanmış kiralamalar</div>
+        </div>
+
+        <div class="rp-stat rp-stat-red">
+            <div class="rp-stat-top">
+                <span class="rp-stat-label">Reddedilen</span>
+                <span class="rp-stat-icon"><i class="fa-solid fa-circle-xmark"></i></span>
+            </div>
+            <h2 class="rp-stat-value">@rejectedCount</h2>
+            <div class="rp-stat-note">İptal edilen: @cancelledCount</div>
+        </div>
+    </section>
+
+    <section class="rp-panel">
+        <div class="rp-panel-head">
+            <div>
+                <h2 class="rp-panel-title">Rezervasyon Listesi</h2>
+                <p class="rp-panel-desc">Müşteri, araç, şube, tarih ve ödeme bilgileri</p>
+            </div>
+            <span class="rp-total">
+                <i class="fa-solid fa-list-check"></i>
+                <span id="rpVisibleCount">@totalCount</span> / @totalCount kayıt
+            </span>
+        </div>
+
+        <div class="rp-toolbar">
+            <div class="rp-search-wrap">
+                <i class="fa-solid fa-magnifying-glass rp-search-icon"></i>
+                <input id="rpSearch"
+                       type="search"
+                       class="rp-search"
+                       placeholder="Müşteri, araç, plaka veya rezervasyon ara..."
+                       aria-label="Rezervasyonlarda ara" />
+            </div>
+
+            <select id="rpStatusFilter" class="rp-filter" aria-label="Duruma göre filtrele">
+                <option value="">Tüm durumlar</option>
+                <option value="Pending">Onay bekleyen</option>
+                <option value="Approved">Onaylanan</option>
+                <option value="Rejected">Reddedilen</option>
+                <option value="Cancelled">İptal edilen</option>
+            </select>
+        </div>
+
+        <div class="rp-table-wrap">
+            <table class="rp-table">
+                <thead>
+                    <tr>
+                        <th>Rezervasyon</th>
+                        <th>Müşteri</th>
+                        <th>Araç</th>
+                        <th>Alış Noktası</th>
+                        <th>İade Noktası</th>
+                        <th>Kiralama Tarihleri</th>
+                        <th>Toplam Tutar</th>
+                        <th>Durum</th>
+                        <th class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+
+                <tbody id="rpTableBody">
+                    @if (reservations.Any())
+                    {
+                        foreach (var rental in reservations.OrderByDescending(x => x.RentalId))
+                        {
+                            var customer = customers?.FirstOrDefault(x => x.CustomerId == rental.CustomerId);
+                            var car = cars?.FirstOrDefault(x => x.CarId == rental.CarId);
+                            var pickupBranch = branches?.FirstOrDefault(x => x.BranchId == rental.PickupBranchId);
+                            var returnBranch = branches?.FirstOrDefault(x => x.BranchId == rental.ReturnBranchId);
+
+                            var customerName = customer == null
+                            ? "Müşteri bulunamadı"
+                            : $"{customer.Name} {customer.SurName}".Trim();
+
+                            var initials = customerName.Length > 0
+                            ? customerName.Substring(0, 1).ToUpperInvariant()
+                            : "?";
+
+                            var statusClass = rental.Status switch
+                            {
+                                "Pending" => "rp-pending",
+                                "Approved" => "rp-approved",
+                                "Rejected" => "rp-rejected",
+                                "Cancelled" => "rp-cancelled",
+                                _ => "rp-other"
+                            };
+
+                            var statusText = rental.Status switch
+                            {
+                                "Pending" => "Bekliyor",
+                                "Approved" => "Onaylandı",
+                                "Rejected" => "Reddedildi",
+                                "Cancelled" => "İptal",
+                                _ => rental.Status ?? "Bilinmiyor"
+                            };
+
+                            var searchText = $"{rental.RentalId} {customerName} {customer?.Email} {car?.PlateNumber} {car?.BrandId} {car?.ModelId} {pickupBranch?.BranchName} {returnBranch?.BranchName} {rental.Status}";
+
+                            <tr class="rp-row"
+                                data-status="@(rental.Status ?? "")"
+                                data-search="@searchText">
+                                <td>
+                                    <span class="rp-booking-id">#@rental.RentalId</span>
+                                </td>
+
+                                <td>
+                                    @if (customer != null)
+                                    {
+                                        <div class="rp-customer">
+                                            <div class="rp-avatar">@initials</div>
+                                            <div>
+                                                <div class="rp-customer-name">@customerName</div>
+                                                <div class="rp-customer-email">@customer.Email</div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Müşteri bulunamadı</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (car != null)
+                                    {
+                                        <div class="rp-car">
+                                            <span class="rp-car-icon"><i class="fa-solid fa-car-side"></i></span>
+                                            <span>@car.PlateNumber</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Araç bulunamadı</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="rp-branch">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                        <span>@(pickupBranch?.BranchName ?? "-")</span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="rp-branch">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                        <span>@(returnBranch?.BranchName ?? "-")</span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="rp-dates">
+                                        <div class="rp-date-start">
+                                            <i class="fa-regular fa-calendar me-1"></i>
+                                            @rental.PickupDate.ToString("dd.MM.yyyy HH:mm")
+                                        </div>
+                                        <div class="rp-date-end">
+                                            <i class="fa-solid fa-arrow-down me-1"></i>
+                                            @rental.ReturnDate.ToString("dd.MM.yyyy HH:mm")
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="rp-price">@rental.TotalPrice.ToString("N2") ₺</span>
+                                </td>
+
+                                <td>
+                                    <span class="rp-status @statusClass">@statusText</span>
+                                </td>
+
+                                <td>
+                                    <div class="rp-actions">
+                                        <a asp-area="Admin"
+                                           asp-controller="Rental"
+                                           asp-action="Detail"
+                                           asp-route-id="@rental.RentalId"
+                                           class="rp-action rp-detail">
+                                            <i class="fa-regular fa-eye"></i> Detay
+                                        </a>
+
+                                        @if (rental.Status == "Pending")
+                                        {
+                                            <form asp-area="Admin"
+                                                  asp-controller="Rental"
+                                                  asp-action="Approve"
+                                                  asp-route-id="@rental.RentalId"
+                                                  method="post"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('Bu rezervasyonu onaylamak istiyor musunuz?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="rp-action rp-approve">
+                                                    <i class="fa-solid fa-check"></i> Onayla
+                                                </button>
+                                            </form>
+
+                                            <form asp-area="Admin"
+                                                  asp-controller="Rental"
+                                                  asp-action="Reject"
+                                                  asp-route-id="@rental.RentalId"
+                                                  method="post"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('Bu rezervasyonu reddetmek istiyor musunuz?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="rp-action rp-reject">
+                                                    <i class="fa-solid fa-xmark"></i> Reddet
+                                                </button>
+                                            </form>
+                                        }
+
+                                        <form asp-area="Admin"
+                                              asp-controller="Rental"
+                                              asp-action="Delete"
+                                              asp-route-id="@rental.RentalId"
+                                              method="post"
+                                              class="d-inline"
+                                              onsubmit="return confirm('Bu rezervasyonu kalıcı olarak silmek istediğinize emin misiniz?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="rp-action rp-delete">
+                                                <i class="fa-regular fa-trash-can"></i> Sil
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="rp-empty">
+                                <div class="rp-empty-icon">
+                                    <i class="fa-regular fa-calendar-xmark"></i>
+                                </div>
+                                <h3>Henüz rezervasyon bulunmuyor</h3>
+                                <p>Yeni rezervasyonlar geldiğinde burada görüntülenecek.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="rp-no-results" id="rpNoResults">
+            <i class="fa-solid fa-magnifying-glass me-2"></i>
+            Aramanızla eşleşen rezervasyon bulunamadı.
+        </div>
+    </section>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const search = document.getElementById("rpSearch");
+        const statusFilter = document.getElementById("rpStatusFilter");
+        const rows = Array.from(document.querySelectorAll(".rp-row"));
+        const noResults = document.getElementById("rpNoResults");
+        const visibleCount = document.getElementById("rpVisibleCount");
+
+        function filterReservations() {
+            const query = (search?.value || "").toLocaleLowerCase("tr-TR").trim();
+            const status = statusFilter?.value || "";
+            let visible = 0;
+
+            rows.forEach(function (row) {
+                const text = (row.dataset.search || "").toLocaleLowerCase("tr-TR");
+                const matchesText = text.includes(query);
+                const matchesStatus = !status || row.dataset.status === status;
+                const show = matchesText && matchesStatus;
+
+                row.style.display = show ? "" : "none";
+                if (show) visible++;
+            });
+
+            if (visibleCount) visibleCount.textContent = visible;
+            if (noResults) {
+                noResults.style.display = rows.length > 0 && visible === 0 ? "block" : "none";
+            }
+        }
+
+        search?.addEventListener("input", filterReservations);
+        statusFilter?.addEventListener("change", filterReservations);
+    });
+</script>

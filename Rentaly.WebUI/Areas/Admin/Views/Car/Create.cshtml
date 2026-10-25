@@ -1,0 +1,523 @@
+﻿@model Rentaly.EntityLayer.Entities.Car
+
+@{
+    ViewData["Title"] = "Yeni Araç Ekle";
+
+    var brands = ViewBag.Brands as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+    var models = ViewBag.Models as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+    var categories = ViewBag.Categories as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+    var branches = ViewBag.Branches as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+}
+
+<div class="container-fluid px-4">
+
+    <!-- HEADER -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h1 class="h3 fw-bold mb-1">
+                Yeni Araç Ekle
+            </h1>
+
+            <p class="text-muted mb-0">
+                Rentaly sistemine yeni bir araç ekleyin.
+            </p>
+        </div>
+
+        <a href="/Admin/Car"
+           class="btn btn-outline-secondary">
+
+            <i class="fas fa-arrow-left me-2"></i>
+            Araç Listesine Dön
+
+        </a>
+
+    </div>
+
+
+    <!-- FORM -->
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white py-3">
+
+            <h5 class="fw-bold mb-0">
+                Araç Bilgileri
+            </h5>
+
+        </div>
+
+
+        <div class="card-body p-4">
+
+            <form asp-action="Create"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="alert alert-danger">
+                </div>
+
+
+                <!-- BASIC INFORMATION -->
+
+                <h6 class="fw-bold mb-3">
+                    <i class="fas fa-car me-2 text-primary"></i>
+                    Temel Bilgiler
+                </h6>
+
+                <div class="row g-4 mb-4">
+
+
+                    <!-- PLATE -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="PlateNumber"
+                               class="form-label fw-semibold">
+                            Plaka
+                        </label>
+
+                        <input asp-for="PlateNumber"
+                               class="form-control"
+                               placeholder="34 ABC 123" />
+
+                        <span asp-validation-for="PlateNumber"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- VIN -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="VIN"
+                               class="form-label fw-semibold">
+                            VIN
+                        </label>
+
+                        <input asp-for="VIN"
+                               class="form-control"
+                               placeholder="Araç şasi numarası" />
+
+                        <span asp-validation-for="VIN"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- BRAND -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="BrandId"
+                               class="form-label fw-semibold">
+                            Marka
+                        </label>
+
+                        <select asp-for="BrandId"
+                                asp-items="brands"
+                                class="form-select">
+
+                            <option value="">
+                                Marka Seçiniz
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="BrandId"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- MODEL -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="ModelId"
+                               class="form-label fw-semibold">
+                            Model
+                        </label>
+
+                        <select asp-for="ModelId"
+                                asp-items="models"
+                                class="form-select">
+
+                            <option value="">
+                                Model Seçiniz
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="ModelId"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- CATEGORY -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="CategoryId"
+                               class="form-label fw-semibold">
+                            Kategori
+                        </label>
+
+                        <select asp-for="CategoryId"
+                                asp-items="categories"
+                                class="form-select">
+
+                            <option value="">
+                                Kategori Seçiniz
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="CategoryId"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- BRANCH -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="BranchId"
+                               class="form-label fw-semibold">
+                            Şube / Lokasyon
+                        </label>
+
+                        <select asp-for="BranchId"
+                                asp-items="branches"
+                                class="form-select">
+
+                            <option value="">
+                                Şube Seçiniz
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="BranchId"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <hr class="my-4" />
+
+
+                <!-- TECHNICAL INFORMATION -->
+
+                <h6 class="fw-bold mb-3">
+                    <i class="fas fa-cogs me-2 text-primary"></i>
+                    Teknik Bilgiler
+                </h6>
+
+                <div class="row g-4 mb-4">
+
+
+                    <!-- YEAR -->
+
+                    <div class="col-md-4">
+
+                        <label asp-for="Year"
+                               class="form-label fw-semibold">
+                            Model Yılı
+                        </label>
+
+                        <input asp-for="Year"
+                               type="number"
+                               class="form-control"
+                               placeholder="2026" />
+
+                    </div>
+
+
+                    <!-- KM -->
+
+                    <div class="col-md-4">
+
+                        <label asp-for="Kilometer"
+                               class="form-label fw-semibold">
+                            Kilometre
+                        </label>
+
+                        <input asp-for="Kilometer"
+                               type="number"
+                               class="form-control"
+                               placeholder="50000" />
+
+                    </div>
+
+
+                    <!-- FUEL -->
+
+                    <div class="col-md-4">
+
+                        <label asp-for="FuelType"
+                               class="form-label fw-semibold">
+                            Yakıt Tipi
+                        </label>
+
+                        <select asp-for="FuelType"
+                                class="form-select">
+
+                            <option value="">
+                                Yakıt Seçiniz
+                            </option>
+
+                            <option value="Benzin">
+                                Benzin
+                            </option>
+
+                            <option value="Dizel">
+                                Dizel
+                            </option>
+
+                            <option value="Hibrit">
+                                Hibrit
+                            </option>
+
+                            <option value="Elektrik">
+                                Elektrik
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SEAT -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="SeatCount"
+                               class="form-label fw-semibold">
+                            Koltuk Sayısı
+                        </label>
+
+                        <input asp-for="SeatCount"
+                               type="number"
+                               class="form-control"
+                               placeholder="5" />
+
+                    </div>
+
+
+                    <!-- LUGGAGE -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="LuggageCount"
+                               class="form-label fw-semibold">
+                            Bagaj Sayısı
+                        </label>
+
+                        <input asp-for="LuggageCount"
+                               type="number"
+                               class="form-control"
+                               placeholder="3" />
+
+                    </div>
+
+                </div>
+
+
+                <hr class="my-4" />
+
+
+                <!-- PRICE -->
+
+                <h6 class="fw-bold mb-3">
+
+                    <i class="fas fa-money-bill-wave me-2 text-primary"></i>
+
+                    Fiyat Bilgileri
+
+                </h6>
+
+
+                <div class="row g-4 mb-4">
+
+
+                    <!-- DAILY PRICE -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="DailyPrice"
+                               class="form-label fw-semibold">
+
+                            Günlük Kiralama Ücreti
+
+                        </label>
+
+                        <div class="input-group">
+
+                            <input asp-for="DailyPrice"
+                                   type="number"
+                                   step="0.01"
+                                   class="form-control"
+                                   placeholder="1500" />
+
+                            <span class="input-group-text">
+                                ₺
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DEPOSIT -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="DepositAmount"
+                               class="form-label fw-semibold">
+
+                            Depozito Tutarı
+
+                        </label>
+
+                        <div class="input-group">
+
+                            <input asp-for="DepositAmount"
+                                   type="number"
+                                   step="0.01"
+                                   class="form-control"
+                                   placeholder="5000" />
+
+                            <span class="input-group-text">
+                                ₺
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <hr class="my-4" />
+
+
+                <!-- IMAGE -->
+
+                <h6 class="fw-bold mb-3">
+
+                    <i class="fas fa-image me-2 text-primary"></i>
+
+                    Görsel
+
+                </h6>
+
+
+                <div class="mb-4">
+
+                    <label asp-for="ImageUrl"
+                           class="form-label fw-semibold">
+
+                        Araç Görsel URL
+
+                    </label>
+
+                    <input asp-for="ImageUrl"
+                           class="form-control"
+                           placeholder="https://..." />
+
+                    <small class="text-muted">
+                        Araç görselinin URL adresini giriniz.
+                    </small>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="row g-4 mb-4">
+
+                    <div class="col-md-6">
+
+                        <div class="form-check form-switch">
+
+                            <input asp-for="IsAvailable"
+                                   class="form-check-input"
+                                   checked />
+
+                            <label asp-for="IsAvailable"
+                                   class="form-check-label fw-semibold">
+
+                                Araç Kiralanabilir
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <div class="form-check form-switch">
+
+                            <input asp-for="IsActive"
+                                   class="form-check-input"
+                                   checked />
+
+                            <label asp-for="IsActive"
+                                   class="form-check-label fw-semibold">
+
+                                Araç Aktif
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BUTTONS -->
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a href="/Admin/Car"
+                       class="btn btn-light px-4">
+
+                        İptal
+
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary px-4">
+
+                        <i class="fas fa-save me-2"></i>
+
+                        Aracı Kaydet
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,556 @@
+﻿
+@model List<Rentaly.DtoLayer.CustomerDtos.ResultCustomerDto>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Müşteriler";
+
+    var customers = Model ?? new List<Rentaly.DtoLayer.CustomerDtos.ResultCustomerDto>();
+}
+
+<style>
+    .customer-admin {
+        padding: 10px 4px 30px;
+        color: #25253b;
+    }
+
+    .customer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 28px;
+    }
+
+    .customer-header-content {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .customer-header-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #6366f1, #9395ff);
+        color: white;
+        font-size: 25px;
+        box-shadow: 0 8px 20px rgba(99, 102, 241, .22);
+    }
+
+    .customer-header h3 {
+        margin: 0 0 6px;
+        font-size: 25px;
+        font-weight: 800;
+        letter-spacing: -.5px;
+    }
+
+    .customer-header p {
+        margin: 0;
+        color: #88889c;
+        font-size: 13px;
+    }
+
+    .customer-overview {
+        display: flex;
+        align-items: center;
+        gap: 17px;
+        padding: 22px 25px;
+        margin-bottom: 25px;
+        border: 1px solid #e8e7ff;
+        border-radius: 18px;
+        background: linear-gradient(115deg, #f2f1ff, #fff 75%);
+    }
+
+    .customer-overview-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 53px;
+        height: 53px;
+        flex-shrink: 0;
+        border-radius: 15px;
+        background: #e4e2ff;
+        color: #6366f1;
+        font-size: 23px;
+    }
+
+    .customer-overview-label {
+        margin-bottom: 4px;
+        color: #85859a;
+        font-size: 12px;
+    }
+
+    .customer-overview-count {
+        color: #302d56;
+        font-size: 27px;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .customer-alert {
+        padding: 14px 18px;
+        border-radius: 12px;
+        font-size: 13px;
+    }
+
+    .customer-section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 17px;
+    }
+
+        .customer-section-heading h5 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .customer-section-heading span {
+            color: #9292a5;
+            font-size: 12px;
+        }
+
+    .customer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+        gap: 20px;
+    }
+
+    .customer-card {
+        position: relative;
+        min-width: 0;
+        overflow: hidden;
+        padding: 23px;
+        border: 1px solid #ececf5;
+        border-radius: 19px;
+        background: #fff;
+        box-shadow: 0 5px 18px rgba(35, 35, 70, .035);
+        transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+
+        .customer-card::before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #6366f1, #b1aaff);
+            content: "";
+        }
+
+        .customer-card:hover {
+            transform: translateY(-5px);
+            border-color: #dcd9ff;
+            box-shadow: 0 14px 32px rgba(50, 45, 100, .09);
+        }
+
+    .customer-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .customer-avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 62px;
+        height: 62px;
+        flex-shrink: 0;
+        border: 1px solid #e5e3ff;
+        border-radius: 19px;
+        background: #f0efff;
+        color: #6366f1;
+        font-size: 25px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .customer-id {
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: #f5f5fa;
+        color: #85859a;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .customer-name {
+        margin: 0 0 6px;
+        color: #292744;
+        font-size: 19px;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .customer-subtitle {
+        margin-bottom: 19px;
+        color: #9292a5;
+        font-size: 12px;
+    }
+
+    .customer-info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .customer-info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        min-width: 0;
+    }
+
+    .customer-info-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+        border-radius: 10px;
+        background: #f2f1ff;
+        color: #7772e8;
+        font-size: 13px;
+    }
+
+    .customer-info-content {
+        min-width: 0;
+        padding-top: 2px;
+    }
+
+    .customer-info-label {
+        margin-bottom: 3px;
+        color: #9999aa;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+
+    .customer-info-value {
+        color: #555469;
+        font-size: 12px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+        .customer-info-value.missing {
+            color: #aaaaba;
+        }
+
+    .customer-card-divider {
+        height: 1px;
+        margin-bottom: 17px;
+        background: #f0f0f6;
+    }
+
+    .customer-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .customer-action-btn {
+        display: inline-flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 10px 8px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none !important;
+        transition: all .2s ease;
+    }
+
+    .customer-detail-btn {
+        border-color: #e2e0ff;
+        background: #f0efff;
+        color: #6366f1 !important;
+    }
+
+        .customer-detail-btn:hover {
+            background: #6366f1;
+            color: #fff !important;
+        }
+
+    .customer-delete-btn {
+        border-color: #ffe1e3;
+        background: #fff0f1;
+        color: #e05260 !important;
+        cursor: pointer;
+    }
+
+        .customer-delete-btn:hover {
+            background: #e05260;
+            color: #fff !important;
+        }
+
+    .customer-empty {
+        grid-column: 1 / -1;
+        padding: 65px 20px;
+        border: 1px dashed #dcdbea;
+        border-radius: 20px;
+        background: #fff;
+        text-align: center;
+    }
+
+    .customer-empty-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 75px;
+        height: 75px;
+        margin: 0 auto 18px;
+        border-radius: 23px;
+        background: #f0efff;
+        color: #7772e8;
+        font-size: 30px;
+    }
+
+    .customer-empty h5 {
+        margin-bottom: 8px;
+        color: #292744;
+        font-weight: 800;
+    }
+
+    .customer-empty p {
+        margin-bottom: 0;
+        color: #9292a5;
+        font-size: 13px;
+    }
+
+    @@media (max-width: 576px) {
+        .customer-header h3 {
+            font-size: 21px;
+        }
+
+        .customer-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .customer-overview {
+            padding: 18px;
+        }
+    }
+</style>
+
+<div class="container-fluid customer-admin">
+
+    <!-- Başlık -->
+    <div class="customer-header">
+        <div class="customer-header-content">
+            <div class="customer-header-icon">
+                <i class="fa-solid fa-users"></i>
+            </div>
+
+            <div>
+                <h3>Müşteri Yönetimi</h3>
+                <p>Sistemde kayıtlı müşterileri görüntüleyin ve yönetin.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toplam müşteri -->
+    <div class="customer-overview">
+        <div class="customer-overview-icon">
+            <i class="fa-solid fa-user-group"></i>
+        </div>
+
+        <div>
+            <div class="customer-overview-label">
+                Sistemde kayıtlı toplam müşteri
+            </div>
+            <div class="customer-overview-count">@customers.Count</div>
+        </div>
+    </div>
+
+    <!-- Başarı mesajı -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show customer-alert"
+             role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>
+            @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Kapat">
+            </button>
+        </div>
+    }
+
+    <!-- Müşteri kartları -->
+    <div class="customer-section-heading">
+        <h5>Kayıtlı Müşteriler</h5>
+        <span>@customers.Count müşteri listeleniyor</span>
+    </div>
+
+    <div class="customer-grid">
+
+        @if (customers.Any())
+        {
+            foreach (var customer in customers.OrderBy(x => x.Name).ThenBy(x => x.SurName))
+            {
+                var fullName = $"{customer.Name} {customer.SurName}".Trim();
+
+                var initials = string.Concat(
+                (customer.Name ?? "").Take(1),
+                (customer.SurName ?? "").Take(1)
+                ).ToUpperInvariant();
+
+                <div class="customer-card">
+
+                    <div class="customer-card-top">
+                        <div class="customer-avatar">
+                            @(string.IsNullOrWhiteSpace(initials) ? "?" : initials)
+                        </div>
+
+                        <span class="customer-id">
+                            MÜŞTERİ #@customer.CustomerId
+                        </span>
+                    </div>
+
+                    <h5 class="customer-name">
+                        @(string.IsNullOrWhiteSpace(fullName)
+                                        ? "İsimsiz Müşteri"
+                                        : fullName)
+                                               </h5>
+
+                    <div class="customer-subtitle">
+                        <i class="fa-regular fa-id-card me-1"></i>
+                        Müşteri bilgileri
+                    </div>
+
+                    <div class="customer-info-list">
+
+                        <div class="customer-info-item">
+                            <div class="customer-info-icon">
+                                <i class="fa-solid fa-envelope"></i>
+                            </div>
+
+                            <div class="customer-info-content">
+                                <div class="customer-info-label">E-posta</div>
+                                <div class="customer-info-value">
+                                    @(string.IsNullOrWhiteSpace(customer.Email)
+                                                                ? "Belirtilmemiş"
+                                                                : customer.Email)
+                                                                             </div>
+                                                                         </div>
+                                                                     </div>
+
+                        <div class="customer-info-item">
+                            <div class="customer-info-icon">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+
+                            <div class="customer-info-content">
+                                <div class="customer-info-label">Telefon</div>
+                                <div class="customer-info-value">
+                                    @(string.IsNullOrWhiteSpace(customer.Phone)
+                                                                ? "Belirtilmemiş"
+                                                                : customer.Phone)
+                                                                             </div>
+                                                                         </div>
+                                                                     </div>
+
+                        <div class="customer-info-item">
+                            <div class="customer-info-icon">
+                                <i class="fa-solid fa-id-card"></i>
+                            </div>
+
+                            <div class="customer-info-content">
+                                <div class="customer-info-label">Kimlik numarası</div>
+                                <div class="customer-info-value">
+                                    @(string.IsNullOrWhiteSpace(customer.IdentityNumber)
+                                                                ? "Belirtilmemiş"
+                                                                : customer.IdentityNumber)
+                                                                                      </div>
+                                                                                  </div>
+                                                                              </div>
+
+                        <div class="customer-info-item">
+                            <div class="customer-info-icon">
+                                <i class="fa-solid fa-car"></i>
+                            </div>
+
+                            <div class="customer-info-content">
+                                <div class="customer-info-label">Ehliyet numarası</div>
+                                <div class="customer-info-value">
+                                    @(string.IsNullOrWhiteSpace(customer.DrivingLicenseNumber)
+                                                                ? "Belirtilmemiş"
+                                                                : customer.DrivingLicenseNumber)
+                        </div>
+                    </div>
+                </div>
+
+                    </div>
+
+                    <div class="customer-card-divider"></div>
+
+                    <div class="customer-actions">
+
+                        <a asp-area="Admin"
+                           asp-controller="Customer"
+                           asp-action="Detail"
+                           asp-route-id="@customer.CustomerId"
+                           class="customer-action-btn customer-detail-btn">
+                            <i class="fa-solid fa-eye"></i>
+                            Detay
+                        </a>
+
+                        <form asp-area="Admin"
+                              asp-controller="Customer"
+                              asp-action="Delete"
+                              asp-route-id="@customer.CustomerId"
+                              method="post"
+                              style="display: flex; flex: 1;"
+                              onsubmit="return confirm('Bu müşteriyi silmek istediğinize emin misiniz?');">
+
+                            @Html.AntiForgeryToken()
+
+                            <button type="submit"
+                                    class="customer-action-btn customer-delete-btn"
+                                    style="width: 100%;">
+                                <i class="fa-solid fa-trash"></i>
+                                Sil
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+                }
+        }
+        else
+        {
+            <div class="customer-empty">
+                <div class="customer-empty-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <h5>Henüz müşteri bulunmuyor</h5>
+
+                <p>Müşteri kayıtları oluşturulduğunda burada görüntülenecek.</p>
+            </div>
+        }
+
+    </div>
+
+</div>

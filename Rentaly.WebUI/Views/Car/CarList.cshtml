@@ -1,0 +1,990 @@
+﻿@model List<Rentaly.EntityLayer.Entities.Car>
+
+@{
+    var brands = ViewBag.Brands as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+    var models = ViewBag.Models as List<Rentaly.EntityLayer.Entities.CarModel>;
+    var categories = ViewBag.Categories as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+    var branches = ViewBag.Branches as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+
+    decimal? minPrice = ViewBag.MinPrice;
+    decimal? maxPrice = ViewBag.MaxPrice;
+    int? selectedModelId = ViewBag.SelectedModelId;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+    <title>Rentaly - Araçlar</title>
+
+    <link rel="icon"
+          href="/RentalyTema/images/icon.png"
+          type="image/gif"
+          sizes="16x16">
+
+    <meta charset="utf-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <link href="/RentalyTema/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link href="/RentalyTema/css/mdb.min.css"
+          rel="stylesheet">
+
+    <link href="/RentalyTema/css/plugins.css"
+          rel="stylesheet">
+
+    <link href="/RentalyTema/css/style.css"
+          rel="stylesheet">
+
+    <link href="/RentalyTema/css/coloring.css"
+          rel="stylesheet">
+
+    <link id="colors"
+          href="/RentalyTema/css/colors/scheme-01.css"
+          rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- ================= HEADER ================= -->
+
+        <header class="transparent scroll-light has-topbar">
+
+            <div id="topbar" class="topbar-dark text-light">
+
+                <div class="container">
+
+                    <div class="topbar-left xs-hide">
+
+                        <div class="topbar-widget">
+                            <a href="#">
+                                <i class="fa fa-phone"></i>
+                                +90 555 555 55 55
+                            </a>
+                        </div>
+
+                        <div class="topbar-widget">
+                            <a href="mailto:contact@rentaly.com">
+                                <i class="fa fa-envelope"></i>
+                                contact@rentaly.com
+                            </a>
+                        </div>
+
+                        <div class="topbar-widget">
+                            <a href="#">
+                                <i class="fa fa-clock-o"></i>
+                                Mon - Fri 08.00 - 18.00
+                            </a>
+                        </div>
+
+                    </div>
+
+                    <div class="topbar-right">
+
+                        <div class="social-icons">
+
+                            <a href="#">
+                                <i class="fa fa-facebook fa-lg"></i>
+                            </a>
+
+                            <a href="#">
+                                <i class="fa fa-twitter fa-lg"></i>
+                            </a>
+
+                            <a href="#">
+                                <i class="fa fa-youtube fa-lg"></i>
+                            </a>
+
+                            <a href="#">
+                                <i class="fa fa-instagram fa-lg"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= NAVBAR ================= -->
+
+            <div class="container">
+
+                <div class="row">
+
+                    <div class="col-md-12">
+
+                        <div class="de-flex sm-pt10">
+
+                            <!-- LOGO -->
+
+                            <div class="de-flex-col">
+
+                                <div id="logo">
+
+                                    <a href="/">
+
+                                        <img class="logo-1"
+                                             src="/RentalyTema/images/logo-light.png"
+                                             alt="Rentaly">
+
+                                        <img class="logo-2"
+                                             src="/RentalyTema/images/logo.png"
+                                             alt="Rentaly">
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- MENU -->
+
+                            <div class="de-flex-col header-col-mid">
+
+                                <ul id="mainmenu">
+
+                                    <li>
+                                        <a class="menu-item"
+                                           href="/">
+                                            Home
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="menu-item active"
+                                           href="/Car/CarList">
+                                            Cars
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="menu-item"
+                                           href="/Booking">
+                                            Booking
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="menu-item"
+                                           href="/Account">
+                                            My Account
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="menu-item"
+                                           href="/Home/About">
+                                            About Us
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="menu-item"
+                                           href="/Home/Contact">
+                                            Contact
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+
+
+                            <!-- SIGN IN -->
+
+                            <div class="de-flex-col">
+
+                                <div class="menu_side_area">
+
+                                    <a href="/Login"
+                                       class="btn-main">
+                                        Sign In
+                                    </a>
+
+                                    <span id="menu-btn"></span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- ================= CONTENT ================= -->
+
+        <div class="no-bottom" id="content">
+
+            <div id="top"></div>
+
+
+            <!-- ================= PAGE TITLE ================= -->
+
+            <section class="jarallax">
+
+                <img src="/RentalyTema/images/background/2.jpg"
+                     class="jarallax-img"
+                     alt="Rentaly">
+
+                <div class="container text-light">
+
+                    <div class="row align-items-center">
+
+                        <div class="col-lg-12">
+
+                            <div class="spacer-double"></div>
+                            <div class="spacer-double"></div>
+
+                            <h1>
+                                Our Vehicle Fleet
+                            </h1>
+
+                            <p>
+                                İhtiyacınıza uygun aracı kolayca bulun.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= FILTER ================= -->
+
+            <section>
+
+                <div class="container">
+
+                    <div class="row">
+
+                        <div class="col-lg-12">
+
+                            <div class="p-4 rounded-3 shadow-soft"
+                                 data-bgcolor="#ffffff">
+
+                                <form asp-controller="Car"
+                                      asp-action="CarList"
+                                      method="get">
+
+                                    <div class="row">
+
+
+                                        <!-- BRAND -->
+
+                                        <div class="col-lg-4 col-md-6 mb20">
+
+                                            <h5>
+                                                Marka
+                                            </h5>
+
+                                            <select name="brandId"
+                                                    class="form-control">
+
+                                                <option value="">
+                                                    Tüm Markalar
+                                                </option>
+
+                                                @if (brands != null)
+                                                {
+                                                    foreach (var brand in brands)
+                                                    {
+                                                        <option value="@brand.Value"
+                                                                selected="@brand.Selected">
+                                                            @brand.Text
+                                                        </option>
+                                                    }
+                                                }
+
+                                            </select>
+
+                                        </div>
+
+
+                                        <!-- MODEL -->
+
+                                        <div class="col-lg-4 col-md-6 mb20">
+
+                                            <h5>
+                                                Model
+                                            </h5>
+
+                                            <select name="modelId"
+                                                    class="form-control">
+
+                                                <option value="">
+                                                    Tüm Modeller
+                                                </option>
+
+                                                @if (models != null)
+                                                {
+                                                    foreach (var carModel in models)
+                                                    {
+                                                        <option value="@carModel.CarModelId"
+                                                                selected="@(selectedModelId.HasValue && selectedModelId.Value == carModel.CarModelId)">
+                                                            @carModel.ModelName
+                                                        </option>
+                                                    }
+                                                }
+
+                                            </select>
+
+                                        </div>
+
+
+                                        <!-- CATEGORY -->
+
+                                        <div class="col-lg-4 col-md-6 mb20">
+
+                                            <h5>
+                                                Kategori
+                                            </h5>
+
+                                            <select name="categoryId"
+                                                    class="form-control">
+
+                                                <option value="">
+                                                    Tüm Kategoriler
+                                                </option>
+
+                                                @if (categories != null)
+                                                {
+                                                    foreach (var category in categories)
+                                                    {
+                                                        <option value="@category.Value"
+                                                                selected="@category.Selected">
+                                                            @category.Text
+                                                        </option>
+                                                    }
+                                                }
+
+                                            </select>
+
+                                        </div>
+
+
+                                        <!-- MIN PRICE -->
+
+                                        <div class="col-lg-4 col-md-6 mb20">
+
+                                            <h5>
+                                                Minimum Fiyat
+                                            </h5>
+
+                                            <input type="number"
+                                                   name="minPrice"
+                                                   value="@minPrice"
+                                                   class="form-control"
+                                                   placeholder="Minimum fiyat"
+                                                   min="0"
+                                                   step="0.01">
+
+                                        </div>
+
+
+                                        <!-- MAX PRICE -->
+
+                                        <div class="col-lg-4 col-md-6 mb20">
+
+                                            <h5>
+                                                Maksimum Fiyat
+                                            </h5>
+
+                                            <input type="number"
+                                                   name="maxPrice"
+                                                   value="@maxPrice"
+                                                   class="form-control"
+                                                   placeholder="Maksimum fiyat"
+                                                   min="0"
+                                                   step="0.01">
+
+                                        </div>
+
+
+                                        <!-- BRANCH -->
+
+                                        <div class="col-lg-4 col-md-6 mb20">
+
+                                            <h5>
+                                                Lokasyon
+                                            </h5>
+
+                                            <select name="branchId"
+                                                    class="form-control">
+
+                                                <option value="">
+                                                    Tüm Lokasyonlar
+                                                </option>
+
+                                                @if (branches != null)
+                                                {
+                                                    foreach (var branch in branches)
+                                                    {
+                                                        <option value="@branch.Value"
+                                                                selected="@branch.Selected">
+                                                            @branch.Text
+                                                        </option>
+                                                    }
+                                                }
+
+                                            </select>
+
+                                        </div>
+
+
+                                        <!-- BUTTON -->
+
+                                        <div class="col-lg-12 text-end">
+
+                                            <button type="submit"
+                                                    class="btn-main">
+
+                                                <i class="fa fa-search"></i>
+
+                                                Filtrele
+
+                                            </button>
+
+                                            <a href="/Car/CarList"
+                                               class="btn-main">
+
+                                                Temizle
+
+                                            </a>
+
+                                        </div>
+
+                                    </div>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= VEHICLES ================= -->
+
+            <section id="section-cars">
+
+                <div class="container">
+
+                    <div class="row align-items-center mb-4">
+
+                        <div class="col-lg-8">
+
+                            <h2>
+                                Available Vehicles
+                            </h2>
+
+                            <p>
+                                Seçtiğiniz kriterlere uygun araçlar
+                                aşağıda listelenmektedir.
+                            </p>
+
+                        </div>
+
+                        <div class="col-lg-4 text-lg-end">
+
+                            <strong>
+                                Toplam araç: @(Model?.Count ?? 0)
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    @if (Model != null && Model.Any())
+                    {
+
+                        <div class="row">
+
+                            @foreach (var car in Model)
+                            {
+
+                                var brandName = "Marka";
+                                var modelName = "Model";
+                                var categoryName = "Kategori";
+                                var branchName = "Lokasyon";
+
+
+                                <!-- BRAND NAME -->
+                                if (brands != null)
+                                {
+
+                                    var brand = brands.FirstOrDefault(
+                                    x => x.Value == car.BrandId.ToString());
+
+                                    if (brand != null)
+                                    {
+                                        brandName = brand.Text;
+                                    }
+
+                                }
+
+
+                                <!-- MODEL NAME -->
+                                if (models != null)
+                                {
+
+                                    var carModel = models.FirstOrDefault(
+                                    x => x.CarModelId == car.ModelId);
+
+                                    if (carModel != null)
+                                    {
+                                        modelName = carModel.ModelName;
+                                    }
+
+                                }
+
+
+                                <!-- CATEGORY NAME -->
+                                if (categories != null)
+                                {
+
+                                    var category = categories.FirstOrDefault(
+                                    x => x.Value == car.CategoryId.ToString());
+
+                                    if (category != null)
+                                    {
+                                        categoryName = category.Text;
+                                    }
+
+                                }
+
+
+                                <!-- BRANCH NAME -->
+                                if (branches != null)
+                                {
+
+                                    var branch = branches.FirstOrDefault(
+                                    x => x.Value == car.BranchId.ToString());
+
+                                    if (branch != null)
+                                    {
+                                        branchName = branch.Text;
+                                    }
+
+                                }
+
+
+                                <!-- CAR -->
+
+                                <div class="col-lg-4 col-md-6">
+
+                                    <div class="de-item mb30">
+
+
+                                        <!-- IMAGE -->
+
+                                        <div class="d-img">
+
+                                            <img src="@car.ImageUrl"
+                                                 class="img-fluid"
+                                                 alt="@brandName @modelName">
+
+                                        </div>
+
+
+                                        <!-- INFO -->
+
+                                        <div class="d-info">
+
+                                            <div class="d-text">
+
+                                                <h4>
+                                                    @brandName @modelName
+                                                </h4>
+
+
+                                                <!-- CATEGORY / LOCATION -->
+
+                                                <div class="mb-2">
+
+                                                    <small>
+
+                                                        <i class="fa fa-car"></i>
+
+                                                        @categoryName
+
+                                                    </small>
+
+                                                    <br />
+
+                                                    <small>
+
+                                                        <i class="fa fa-map-marker"></i>
+
+                                                        @branchName
+
+                                                    </small>
+
+                                                </div>
+
+
+                                                <!-- ATTRIBUTES -->
+
+                                                <div class="d-atr-group">
+
+                                                    <span class="d-atr">
+
+                                                        <img src="/RentalyTema/images/icons/1-green.svg"
+                                                             alt="">
+
+                                                        @car.SeatCount
+
+                                                    </span>
+
+
+                                                    <span class="d-atr">
+
+                                                        <img src="/RentalyTema/images/icons/2-green.svg"
+                                                             alt="">
+
+                                                        @car.LuggageCount
+
+                                                    </span>
+
+
+                                                    <span class="d-atr">
+
+                                                        <img src="/RentalyTema/images/icons/3-green.svg"
+                                                             alt="">
+
+                                                        @car.Year
+
+                                                    </span>
+
+
+                                                    <span class="d-atr">
+
+                                                        <img src="/RentalyTema/images/icons/4-green.svg"
+                                                             alt="">
+
+                                                        @car.FuelType
+
+                                                    </span>
+
+                                                </div>
+
+
+                                                <!-- PRICE -->
+
+                                                <div class="d-price">
+
+                                                    Günlük ücret
+
+                                                    <span>
+
+                                                        @car.DailyPrice.ToString("N0") ₺
+
+                                                    </span>
+
+
+                                                    <!-- RENT NOW -->
+
+                                                    <a href="/Car/Detail?id=@car.CarId"
+                                                       class="btn-main">
+
+                                                        Detay
+
+                                                    </a>
+
+                                                    <a href="/Booking/Index?carId=@car.CarId"
+                                                       class="btn-main">
+
+                                                        Rent Now
+
+                                                    </a>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            }
+
+                        </div>
+
+                    }
+                    else
+                    {
+
+                        <!-- NO RESULT -->
+
+                        <div class="row">
+
+                            <div class="col-lg-12 text-center">
+
+                                <div class="p-5">
+
+                                    <i class="fa fa-car"
+                                       style="font-size:60px;">
+                                    </i>
+
+                                    <h3>
+                                        Araç bulunamadı
+                                    </h3>
+
+                                    <p>
+                                        Seçtiğiniz filtrelere uygun
+                                        araç bulunmamaktadır.
+                                    </p>
+
+                                    <a href="/Car/CarList"
+                                       class="btn-main">
+
+                                        Tüm Araçları Göster
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    }
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- ================= FOOTER ================= -->
+
+        <footer class="text-light">
+
+            <div class="container">
+
+                <div class="row g-custom-x">
+
+
+                    <div class="col-lg-3">
+
+                        <div class="widget">
+
+                            <h5>
+                                About Rentaly
+                            </h5>
+
+                            <p>
+                                Where quality meets affordability.
+                                Rentaly provides reliable vehicles
+                                for comfortable and memorable journeys.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-lg-3">
+
+                        <div class="widget">
+
+                            <h5>
+                                Contact Info
+                            </h5>
+
+                            <address class="s1">
+
+                                <span>
+
+                                    <i class="id-color fa fa-map-marker fa-lg"></i>
+
+                                    Istanbul, Türkiye
+
+                                </span>
+
+
+                                <span>
+
+                                    <i class="id-color fa fa-phone fa-lg"></i>
+
+                                    +90 555 555 55 55
+
+                                </span>
+
+
+                                <span>
+
+                                    <i class="id-color fa fa-envelope-o fa-lg"></i>
+
+                                    <a href="mailto:contact@rentaly.com">
+                                        contact@rentaly.com
+                                    </a>
+
+                                </span>
+
+                            </address>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-lg-3">
+
+                        <div class="widget">
+
+                            <h5>
+                                Quick Links
+                            </h5>
+
+                            <ul>
+
+                                <li>
+                                    <a href="/">
+                                        Home
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="/Car/CarList">
+                                        Cars
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="/Booking">
+                                        Booking
+                                    </a>
+                                </li>
+
+                            </ul>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-lg-3">
+
+                        <div class="widget">
+
+                            <h5>
+                                Social Network
+                            </h5>
+
+                            <div class="social-icons">
+
+                                <a href="#">
+                                    <i class="fa fa-facebook fa-lg"></i>
+                                </a>
+
+                                <a href="#">
+                                    <i class="fa fa-twitter fa-lg"></i>
+                                </a>
+
+                                <a href="#">
+                                    <i class="fa fa-linkedin fa-lg"></i>
+                                </a>
+
+                                <a href="#">
+                                    <i class="fa fa-instagram fa-lg"></i>
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SUBFOOTER -->
+
+            <div class="subfooter">
+
+                <div class="container">
+
+                    <div class="row">
+
+                        <div class="col-md-12">
+
+                            <div class="de-flex">
+
+                                <div class="de-flex-col">
+
+                                    <a href="/">
+                                        Copyright 2026 - Rentaly
+                                    </a>
+
+                                </div>
+
+                                <ul class="menu-simple">
+
+                                    <li>
+                                        <a href="#">
+                                            Terms & Conditions
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a href="#">
+                                            Privacy Policy
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </footer>
+
+    </div>
+    <script src="/RentalyTema/js/plugins.js"></script>
+
+    <script src="/RentalyTema/js/designesia.js"></script>
+
+</body>
+
+</html>

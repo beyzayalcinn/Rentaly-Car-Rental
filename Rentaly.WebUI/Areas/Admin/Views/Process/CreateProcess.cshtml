@@ -1,0 +1,103 @@
+﻿@model Rentaly.EntityLayer.Entities.Process
+
+
+
+@{
+    ViewData["Title"] = "Yeni İşleyiş";
+}
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1">Yeni İşleyiş</h3>
+            <p class="text-muted mb-0">
+                Ana sayfada gösterilecek işleyiş adımını ekleyin.
+            </p>
+        </div>
+
+        <a href="/Admin/Process/ProcessList" class="btn btn-secondary">
+            <i class="fa fa-arrow-left"></i> Listeye Dön
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form method="post" action="/Admin/Process/CreateProcess">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Başlık</label>
+
+                        <input type="text"
+                               asp-for="Title"
+                               class="form-control"
+                               placeholder="Örn: Aracınızı Seçin" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">İkon</label>
+
+                        <input type="text"
+                               asp-for="Icon"
+                               class="form-control"
+                               placeholder="Örn: fa fa-car" />
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Açıklama</label>
+
+                        <textarea asp-for="Description"
+                                  class="form-control"
+                                  rows="5"
+                                  placeholder="İşleyiş adımının açıklamasını giriniz"></textarea>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Sıra</label>
+
+                        <input type="number"
+                               asp-for="Order"
+                               class="form-control"
+                               min="1"
+                               value="1" />
+                    </div>
+
+                    <div class="col-md-6 mb-3 d-flex align-items-end">
+                        <div class="form-check mb-2">
+
+                            <input type="checkbox"
+                                   asp-for="Status"
+                                   class="form-check-input" />
+
+                            <label class="form-check-label">
+                                Aktif olarak göster
+                            </label>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a href="/Admin/Process/ProcessList"
+                       class="btn btn-light">
+                        İptal
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fa fa-save"></i>
+                        Kaydet
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

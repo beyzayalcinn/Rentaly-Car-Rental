@@ -1,0 +1,118 @@
+﻿@model Rentaly.EntityLayer.Entities.Testimonial
+
+@{
+    ViewData["Title"] = "Yeni Müşteri Yorumu";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1">Yeni Müşteri Yorumu</h3>
+            <p class="text-muted mb-0">
+                Ana sayfada gösterilecek müşteri yorumunu ekleyin.
+            </p>
+        </div>
+
+        <a href="/Admin/Testimonial/TestimonialList" class="btn btn-secondary">
+            <i class="fa fa-arrow-left"></i> Listeye Dön
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form method="post" action="/Admin/Testimonial/CreateTestimonial">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Ad Soyad</label>
+
+                        <input type="text"
+                               asp-for="Name"
+                               class="form-control"
+                               placeholder="Örn: Ahmet Yılmaz" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Meslek</label>
+
+                        <input type="text"
+                               asp-for="Job"
+                               class="form-control"
+                               placeholder="Örn: Yazılım Geliştirici" />
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Yorum</label>
+
+                        <textarea asp-for="Comment"
+                                  class="form-control"
+                                  rows="6"
+                                  placeholder="Müşteri yorumunu giriniz"></textarea>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Görsel URL</label>
+
+                        <input type="text"
+                               asp-for="ImageUrl"
+                               class="form-control"
+                               placeholder="Müşteri görsel adresi" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Puan</label>
+
+                        <input type="number"
+                               asp-for="Rating"
+                               class="form-control"
+                               min="1"
+                               max="5"
+                               value="5" />
+
+                        <small class="text-muted">
+                            1 ile 5 arasında bir puan giriniz.
+                        </small>
+                    </div>
+
+                    <div class="col-md-12 mb-4">
+
+                        <div class="form-check">
+
+                            <input type="checkbox"
+                                   asp-for="Status"
+                                   class="form-check-input" />
+
+                            <label class="form-check-label">
+                                Aktif olarak göster
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a href="/Admin/Testimonial/TestimonialList"
+                       class="btn btn-light">
+                        İptal
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fa fa-save"></i>
+                        Kaydet
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

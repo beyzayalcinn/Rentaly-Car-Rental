@@ -1,0 +1,746 @@
+﻿@model List<Rentaly.EntityLayer.Entities.Car>
+
+@{
+    ViewData["Title"] = "Araç Yönetimi";
+    var cars = Model ?? new List<Rentaly.EntityLayer.Entities.Car>();
+    var totalCars = cars.Count;
+    var activeCars = cars.Count(x => x.IsActive);
+    var availableCars = cars.Count(x => x.IsAvailable && x.IsActive);
+    var averagePrice = totalCars > 0 ? cars.Average(x => x.DailyPrice) : 0;
+    var brandCount = cars.Select(x => x.BrandId).Distinct().Count();
+}
+
+<style>
+    .car-admin-page {
+        --car-accent: #f5a623;
+        --car-ink: #172033;
+        --car-muted: #7c879b;
+        padding: 28px;
+        color: var(--car-ink);
+        background: #f5f7fb;
+        min-height: 100vh;
+    }
+
+        .car-admin-page * {
+            box-sizing: border-box;
+        }
+
+    .car-admin-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+    }
+
+    .car-admin-eyebrow {
+        color: #d18a0b;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 11px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .car-admin-title {
+        font-size: clamp(25px, 3vw, 34px);
+        font-weight: 850;
+        letter-spacing: -1px;
+        margin: 0 0 7px;
+    }
+
+    .car-admin-subtitle {
+        color: var(--car-muted);
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .car-admin-add {
+        background: var(--car-ink);
+        color: white !important;
+        border: 0;
+        border-radius: 13px;
+        padding: 13px 19px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: .2s ease;
+        box-shadow: 0 8px 20px #17203318;
+    }
+
+        .car-admin-add:hover {
+            background: #293750;
+            transform: translateY(-2px);
+        }
+
+    .car-admin-stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+
+    .car-stat {
+        background: #fff;
+        border: 1px solid #e9edf4;
+        border-radius: 18px;
+        padding: 21px;
+        box-shadow: 0 5px 22px #17203308;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .car-stat-label {
+        color: var(--car-muted);
+        font-size: 12px;
+        font-weight: 650;
+        margin-bottom: 8px;
+    }
+
+    .car-stat-number {
+        font-size: clamp(23px, 2.4vw, 30px);
+        font-weight: 850;
+        letter-spacing: -1px;
+        line-height: 1.1;
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .car-stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 15px;
+        display: grid;
+        place-items: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+        .car-stat-icon.orange {
+            background: #fff3db;
+            color: #d88c08;
+        }
+
+        .car-stat-icon.green {
+            background: #e4f8ed;
+            color: #169957;
+        }
+
+        .car-stat-icon.blue {
+            background: #e8f1ff;
+            color: #3779df;
+        }
+
+        .car-stat-icon.purple {
+            background: #f0eaff;
+            color: #8253d7;
+        }
+
+    .car-admin-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .car-admin-section-title {
+        font-size: 21px;
+        font-weight: 850;
+        margin: 0 0 5px;
+    }
+
+    .car-admin-section-note {
+        color: var(--car-muted);
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .car-admin-filters {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .car-admin-search,
+    .car-admin-select {
+        border: 1px solid #e2e7ef;
+        border-radius: 12px;
+        padding: 11px 13px;
+        background: #fff;
+        color: var(--car-ink);
+        outline: none;
+        min-height: 44px;
+    }
+
+    .car-admin-search {
+        width: min(280px, 100%);
+    }
+
+        .car-admin-search:focus,
+        .car-admin-select:focus {
+            border-color: #e5a42c;
+            box-shadow: 0 0 0 3px #f5a62320;
+        }
+
+    .car-admin-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .car-admin-card {
+        background: white;
+        border: 1px solid #e9edf4;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 7px 24px #17203308;
+        transition: transform .22s ease, box-shadow .22s ease;
+        min-width: 0;
+    }
+
+        .car-admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 35px #17203315;
+        }
+
+    .car-card-image-wrap {
+        height: 205px;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #e9eef5, #f8fafc);
+    }
+
+    .car-card-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform .35s ease;
+    }
+
+    .car-admin-card:hover .car-card-image {
+        transform: scale(1.045);
+    }
+
+    .car-card-image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        place-items: center;
+        color: #9aa6b8;
+        font-size: 55px;
+    }
+
+    .car-card-id {
+        position: absolute;
+        top: 13px;
+        left: 13px;
+        background: #172033e8;
+        color: white;
+        padding: 6px 10px;
+        font-size: 11px;
+        font-weight: 750;
+        border-radius: 9px;
+    }
+
+    .car-card-status {
+        position: absolute;
+        top: 13px;
+        right: 13px;
+        padding: 6px 10px;
+        font-size: 11px;
+        font-weight: 800;
+        border-radius: 9px;
+        background: #e3f8ec;
+        color: #15834b;
+    }
+
+        .car-card-status.unavailable {
+            background: #fff0e8;
+            color: #c45120;
+        }
+
+    .car-card-body {
+        padding: 19px;
+    }
+
+    .car-card-brand {
+        color: #b77809;
+        font-size: 11px;
+        font-weight: 850;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        margin-bottom: 5px;
+    }
+
+    .car-card-title {
+        font-size: 20px;
+        font-weight: 850;
+        letter-spacing: -.5px;
+        margin: 0 0 14px;
+        overflow-wrap: anywhere;
+    }
+
+    .car-card-plate {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: #f4f6fa;
+        border: 1px solid #e4e8ef;
+        border-radius: 8px;
+        padding: 6px 9px;
+        font-size: 12px;
+        font-weight: 800;
+        margin-bottom: 15px;
+    }
+
+    .car-card-plate-mark {
+        width: 5px;
+        height: 15px;
+        background: #3d67a8;
+        border-radius: 3px;
+    }
+
+    .car-card-specs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        padding: 14px 0;
+        border-top: 1px solid #edf0f5;
+        border-bottom: 1px solid #edf0f5;
+    }
+
+    .car-card-spec {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        color: #69768b;
+        font-size: 12px;
+    }
+
+        .car-card-spec i {
+            color: #a9771c;
+            width: 15px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .car-card-spec span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+    .car-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding-top: 16px;
+    }
+
+    .car-card-price-label {
+        font-size: 11px;
+        color: var(--car-muted);
+        margin-bottom: 3px;
+    }
+
+    .car-card-price {
+        font-size: 23px;
+        line-height: 1.15;
+        font-weight: 900;
+        letter-spacing: -.6px;
+        white-space: nowrap;
+    }
+
+        .car-card-price small {
+            font-size: 11px;
+            color: var(--car-muted);
+            font-weight: 600;
+            letter-spacing: 0;
+        }
+
+    .car-card-actions {
+        display: flex;
+        gap: 7px;
+        flex-shrink: 0;
+    }
+
+    .car-card-action {
+        width: 39px;
+        height: 39px;
+        border-radius: 11px;
+        display: grid;
+        place-items: center;
+        text-decoration: none;
+        border: 1px solid #e3e8f0;
+        background: white;
+        color: #536176;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+        .car-card-action.edit:hover {
+            background: #eaf2ff;
+            color: #2868d8;
+            border-color: #cbdcff;
+        }
+
+        .car-card-action.delete:hover {
+            background: #fff0f0;
+            color: #d43e45;
+            border-color: #ffd2d4;
+        }
+
+    .car-admin-empty {
+        grid-column: 1 / -1;
+        background: white;
+        border: 1px dashed #d8deea;
+        border-radius: 20px;
+        padding: 55px 20px;
+        text-align: center;
+    }
+
+    .car-admin-empty-icon {
+        display: inline-grid;
+        place-items: center;
+        width: 78px;
+        height: 78px;
+        border-radius: 25px;
+        background: #fff3dc;
+        color: #d18a0b;
+        font-size: 30px;
+        margin-bottom: 18px;
+    }
+
+    .car-admin-empty h3 {
+        font-weight: 850;
+        font-size: 21px;
+    }
+
+    .car-admin-empty p {
+        color: var(--car-muted);
+    }
+
+    .car-admin-no-results {
+        display: none;
+        background: white;
+        border-radius: 16px;
+        text-align: center;
+        padding: 30px;
+        color: var(--car-muted);
+        margin-top: 15px;
+    }
+
+    @@media (max-width: 1200px) {
+        .car-admin-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .car-admin-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @@media (max-width: 700px) {
+        .car-admin-page {
+            padding: 17px 12px;
+        }
+
+        .car-admin-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .car-admin-stats {
+            gap: 10px;
+        }
+
+        .car-stat {
+            padding: 14px;
+        }
+
+        .car-stat-icon {
+            width: 38px;
+            height: 38px;
+            font-size: 16px;
+            border-radius: 12px;
+        }
+
+        .car-admin-search {
+            width: 100%;
+        }
+
+        .car-admin-filters {
+            width: 100%;
+        }
+
+        .car-admin-select {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .car-card-image-wrap {
+            height: 220px;
+        }
+
+        .car-card-title {
+            font-size: 19px;
+        }
+    }
+
+    @@media (max-width: 390px) {
+        .car-admin-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .car-card-footer {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .car-card-actions {
+            align-self: flex-end;
+        }
+    }
+</style>
+
+<div class="car-admin-page">
+
+    <div class="car-admin-header">
+        <div>
+            <div class="car-admin-eyebrow">RENTALY • YÖNETİM PANELİ</div>
+            <h1 class="car-admin-title">Araç Yönetimi</h1>
+            <p class="car-admin-subtitle">Filonu görüntüle, araçlarını düzenle ve yönet.</p>
+        </div>
+
+        <a href="/Admin/Car/Create" class="car-admin-add">
+            <i class="fas fa-plus"></i>
+            Yeni Araç Ekle
+        </a>
+    </div>
+
+    <div class="car-admin-stats">
+        <div class="car-stat">
+            <div>
+                <div class="car-stat-label">Toplam Araç</div>
+                <h2 class="car-stat-number">@totalCars</h2>
+            </div>
+            <div class="car-stat-icon orange"><i class="fas fa-car-side"></i></div>
+        </div>
+
+        <div class="car-stat">
+            <div>
+                <div class="car-stat-label">Aktif Araç</div>
+                <h2 class="car-stat-number">@activeCars</h2>
+            </div>
+            <div class="car-stat-icon green"><i class="fas fa-check-circle"></i></div>
+        </div>
+
+        <div class="car-stat">
+            <div>
+                <div class="car-stat-label">Kiralamaya Uygun</div>
+                <h2 class="car-stat-number">@availableCars</h2>
+            </div>
+            <div class="car-stat-icon blue"><i class="fas fa-key"></i></div>
+        </div>
+
+        <div class="car-stat">
+            <div>
+                <div class="car-stat-label">Ortalama Günlük Fiyat</div>
+                <h2 class="car-stat-number">@averagePrice.ToString("N0") ₺</h2>
+            </div>
+            <div class="car-stat-icon purple"><i class="fas fa-wallet"></i></div>
+        </div>
+    </div>
+
+    <div class="car-admin-toolbar">
+        <div>
+            <h2 class="car-admin-section-title">Araç Filosu</h2>
+            <p class="car-admin-section-note">Toplam @totalCars araç kayıtlı</p>
+        </div>
+
+        <div class="car-admin-filters">
+            <input type="search"
+                   id="carSearch"
+                   class="car-admin-search"
+                   placeholder="Plaka, marka veya model ara..."
+                   aria-label="Araçlarda ara" />
+
+            <select id="carBrandFilter" class="car-admin-select" aria-label="Markaya göre filtrele">
+                <option value="">Tüm markalar</option>
+                @foreach (var brandId in cars.Select(x => x.BrandId).Distinct().OrderBy(x => x))
+                {
+                    <option value="@brandId">Marka #@brandId</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="car-admin-grid" id="carGrid">
+        @if (cars.Any())
+        {
+            @foreach (var car in cars)
+            {
+                <article class="car-admin-card"
+                         data-search="@($"{car.PlateNumber} {car.BrandId} {car.ModelId} {car.Year} {car.FuelType}".ToLowerInvariant())"
+                         data-brand="@car.BrandId">
+
+                    <div class="car-card-image-wrap">
+                        @if (!string.IsNullOrWhiteSpace(car.ImageUrl))
+                        {
+                            <img src="@car.ImageUrl"
+                                 class="car-card-image"
+                                 alt="@car.PlateNumber"
+                                 loading="lazy"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';" />
+                            <div class="car-card-image-placeholder" style="display:none;">
+                                <i class="fas fa-car-side"></i>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="car-card-image-placeholder">
+                                <i class="fas fa-car-side"></i>
+                            </div>
+                        }
+
+                        <span class="car-card-id">ARAÇ #@car.CarId</span>
+
+                        @if (car.IsActive && car.IsAvailable)
+                        {
+                            <span class="car-card-status">Kiralamaya Uygun</span>
+                        }
+                        else
+                        {
+                            <span class="car-card-status unavailable">
+                                @(car.IsActive ? "Müsait Değil" : "Pasif")
+                            </span>
+                        }
+                    </div>
+
+                    <div class="car-card-body">
+                        <div class="car-card-brand">Marka #@car.BrandId</div>
+                        <h3 class="car-card-title">Model #@car.ModelId</h3>
+
+                        <div class="car-card-plate">
+                            <span class="car-card-plate-mark"></span>
+                            @car.PlateNumber
+                        </div>
+
+                        <div class="car-card-specs">
+                            <div class="car-card-spec">
+                                <i class="fas fa-calendar"></i>
+                                <span>@car.Year model</span>
+                            </div>
+                            <div class="car-card-spec">
+                                <i class="fas fa-road"></i>
+                                <span>@car.Kilometer.ToString("N0") km</span>
+                            </div>
+                            <div class="car-card-spec">
+                                <i class="fas fa-gas-pump"></i>
+                                <span>@car.FuelType</span>
+                            </div>
+                            <div class="car-card-spec">
+                                <i class="fas fa-fingerprint"></i>
+                                <span title="@car.VIN">VIN: @(string.IsNullOrWhiteSpace(car.VIN) ? "Belirtilmemiş" : car.VIN)</span>
+                            </div>
+                        </div>
+
+                        <div class="car-card-footer">
+                            <div>
+                                <div class="car-card-price-label">Günlük kiralama</div>
+                                <div class="car-card-price">
+                                    @car.DailyPrice.ToString("N0") ₺ <small>/ gün</small>
+                                </div>
+                            </div>
+
+                            <div class="car-card-actions">
+                                <a href="/Admin/Car/Update/@car.CarId"
+                                   class="car-card-action edit"
+                                   title="Aracı düzenle"
+                                   aria-label="Aracı düzenle">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+
+                                <form asp-area="Admin"
+                                      asp-controller="Car"
+                                      asp-action="Delete"
+                                      asp-route-id="@car.CarId"
+                                      method="post"
+                                      class="d-inline"
+                                      onsubmit="return confirm('Bu aracı silmek istediğinize emin misiniz?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit"
+                                            class="car-card-action delete"
+                                            title="Aracı sil"
+                                            aria-label="Aracı sil">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            }
+        }
+        else
+        {
+            <div class="car-admin-empty">
+                <div class="car-admin-empty-icon"><i class="fas fa-car-side"></i></div>
+                <h3>Henüz araç bulunmuyor</h3>
+                <p>Filonuza ilk aracı ekleyerek başlayabilirsiniz.</p>
+                <a href="/Admin/Car/Create" class="car-admin-add">
+                    <i class="fas fa-plus"></i> Yeni Araç Ekle
+                </a>
+            </div>
+        }
+    </div>
+
+    <div class="car-admin-no-results" id="carNoResults">
+        <i class="fas fa-search mb-2"></i>
+        <div>Aramanızla eşleşen araç bulunamadı.</div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("carSearch");
+        const brandFilter = document.getElementById("carBrandFilter");
+        const cards = Array.from(document.querySelectorAll(".car-admin-card"));
+        const noResults = document.getElementById("carNoResults");
+
+        function filterCars() {
+            const term = (searchInput?.value || "").toLocaleLowerCase("tr-TR").trim();
+            const brand = brandFilter?.value || "";
+            let visibleCount = 0;
+
+            cards.forEach(function (card) {
+                const searchable = (card.dataset.search || "").toLocaleLowerCase("tr-TR");
+                const matchesSearch = searchable.includes(term);
+                const matchesBrand = !brand || card.dataset.brand === brand;
+                const visible = matchesSearch && matchesBrand;
+
+                card.style.display = visible ? "" : "none";
+                if (visible) visibleCount++;
+            });
+
+            if (noResults) {
+                noResults.style.display = cards.length > 0 && visibleCount === 0 ? "block" : "none";
+            }
+        }
+
+        searchInput?.addEventListener("input", filterCars);
+        brandFilter?.addEventListener("change", filterCars);
+    });
+</script>

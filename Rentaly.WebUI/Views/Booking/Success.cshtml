@@ -1,0 +1,119 @@
+﻿@model Rentaly.EntityLayer.Entities.Rental
+
+@{
+    var car = ViewBag.Car as Rentaly.EntityLayer.Entities.Car;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Rezervasyon Başarılı | Rentaly</title>
+
+    <link href="/RentalyTema/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link href="/RentalyTema/css/style.css"
+          rel="stylesheet">
+
+    <link href="/RentalyTema/css/coloring.css"
+          rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <section class="vh-100 d-flex align-items-center">
+
+            <div class="container">
+
+                <div class="row justify-content-center">
+
+                    <div class="col-lg-7 text-center">
+
+                        <div class="padding40 rounded-3 shadow-soft">
+
+                            <div style="font-size:60px;">
+                                ✓
+                            </div>
+
+                            <h1>
+                                Rezervasyon Talebiniz Alındı
+                            </h1>
+
+                            <p class="lead">
+
+                                Rezervasyonunuz başarıyla oluşturuldu.
+
+                                Admin onayından sonra
+                                e-posta adresinize bilgi gönderilecektir.
+
+                            </p>
+
+                            <hr>
+
+                            <p>
+                                Rezervasyon No:
+                                <strong>
+                                    #@Model.RentalId
+                                </strong>
+                            </p>
+
+                            @if (car != null)
+                            {
+                                <p>
+                                    Araç:
+                                    <strong>
+                                        #@car.CarId
+                                    </strong>
+                                </p>
+                            }
+
+                            <p>
+                                Durum:
+                                <strong>
+                                    Beklemede
+                                </strong>
+                            </p>
+
+                            <div class="mt-4">
+
+                                <a href="/"
+                                   class="btn-main">
+
+                                    Ana Sayfaya Dön
+
+                                </a>
+
+                                <a href="/Car/CarList"
+                                   class="btn-main ms-2">
+
+                                    Araçlara Dön
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</body>
+
+</html>

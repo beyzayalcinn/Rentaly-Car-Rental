@@ -1,0 +1,131 @@
+﻿@model List<Rentaly.EntityLayer.Entities.Testimonial>
+
+@{
+    ViewData["Title"] = "Müşteri Yorumları";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1">Müşteri Yorumları</h3>
+            <p class="text-muted mb-0">
+                Ana sayfadaki müşteri yorumlarını yönetin.
+            </p>
+        </div>
+
+        <a href="/Admin/Testimonial/CreateTestimonial" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Yeni Yorum
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Görsel</th>
+                            <th>Ad Soyad</th>
+                            <th>Meslek</th>
+                            <th>Yorum</th>
+                            <th>Puan</th>
+                            <th>Durum</th>
+                            <th>Onay</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.TestimonialId</td>
+
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl"
+                                             alt="@item.Name"
+                                             style="width:50px;height:50px;object-fit:cover;border-radius:50%;" />
+                                    }
+                                    else
+                                    {
+                                        <span>Görsel yok</span>
+                                    }
+                                </td>
+
+                                <td>@item.Name</td>
+                                <td>@item.Job</td>
+                                <td>@item.Comment</td>
+                                <td>@item.Rating / 5</td>
+
+                                <td>
+                                    @if (item.Status)
+                                    {
+                                        <span class="badge bg-success">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Pasif</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (item.IsApproved)
+                                    {
+                                        <span class="badge bg-success">Onaylandı</span>
+                                    }
+                                    else
+                                    {
+                                        <form asp-area="Admin"
+                                              asp-controller="Testimonial"
+                                              asp-action="ApproveTestimonial"
+                                              method="post">
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@item.TestimonialId" />
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-success">
+                                                Onayla
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
+
+                                <td>
+                                    <a href="/Admin/Testimonial/UpdateTestimonial/@item.TestimonialId"
+                                       class="btn btn-sm btn-warning mb-1">
+                                        Güncelle
+                                    </a>
+
+                                    <form asp-area="Admin"
+                                          asp-controller="Testimonial"
+                                          asp-action="DeleteTestimonial"
+                                          method="post"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Bu müşteri yorumunu silmek istediğinize emin misiniz?');">
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@item.TestimonialId" />
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-danger mb-1">
+                                            Sil
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

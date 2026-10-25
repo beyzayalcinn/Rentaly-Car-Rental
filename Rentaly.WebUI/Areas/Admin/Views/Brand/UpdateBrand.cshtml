@@ -1,0 +1,58 @@
+﻿@model Rentaly.EntityLayer.Entities.Brand
+
+@{
+    ViewData["Title"] = "Marka Güncelle";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1">Marka Güncelle</h3>
+            <p class="text-muted mb-0">
+                Mevcut araç markasını düzenleyin.
+            </p>
+        </div>
+
+        <a href="/Admin/Brand/BrandList" class="btn btn-secondary">
+            <i class="fa fa-arrow-left"></i> Listeye Dön
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form method="post" action="/Admin/Brand/UpdateBrand">
+
+                <input type="hidden" asp-for="BrandId" />
+
+                <div class="mb-3">
+                    <label class="form-label">Marka Adı</label>
+
+                    <input type="text"
+                           asp-for="BrandName"
+                           class="form-control"
+                           placeholder="Marka adını giriniz" />
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a href="/Admin/Brand/BrandList"
+                       class="btn btn-light">
+                        İptal
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-warning">
+                        <i class="fa fa-edit"></i>
+                        Güncelle
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

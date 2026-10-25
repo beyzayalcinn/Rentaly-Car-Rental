@@ -1,0 +1,922 @@
+﻿
+@model Rentaly.EntityLayer.Entities.Car
+
+@{
+    Layout = null;
+
+    ViewData["Title"] = "Araç Detayı";
+
+    var brandName = ViewBag.BrandName as string ?? "Rentaly";
+    var modelName = ViewBag.ModelName as string ?? "Araç";
+    var isAvailable = Model.IsAvailable && Model.IsActive;
+
+    var imageUrl = string.IsNullOrWhiteSpace(Model.ImageUrl)
+        ? null
+        : Url.Content(Model.ImageUrl);
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - @brandName @modelName</title>
+
+    <link rel="stylesheet" href="~/RentalyTema/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <style>
+        :root {
+            --primary: #0878ed;
+            --navy: #172b46;
+            --muted: #75859a;
+            --page-bg: #f5f8fc;
+            --border: #e6edf5;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--page-bg);
+            color: var(--navy);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .public-car-detail {
+            min-height: 100vh;
+            padding-bottom: 55px;
+            background: var(--page-bg);
+            color: var(--navy);
+        }
+
+        .car-detail-breadcrumb {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 24px 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .car-detail-breadcrumb a {
+            color: #355473;
+        }
+
+        .car-detail-breadcrumb a:hover {
+            color: var(--primary);
+        }
+
+        .car-detail-breadcrumb i {
+            font-size: 10px;
+        }
+
+        .car-detail-wrapper {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+            gap: 32px;
+            padding: 28px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            box-shadow: 0 16px 45px rgba(28, 58, 94, .07);
+        }
+
+        .car-detail-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-width: 0;
+        }
+
+        .car-detail-image {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+            min-height: 390px;
+            overflow: hidden;
+            border-radius: 17px;
+            background: radial-gradient(ellipse at center, #fff 0%, #edf3fa 72%, #e6edf6 100%);
+        }
+
+        .car-detail-image > img {
+            display: block;
+            width: 100%;
+            height: 390px;
+            padding: 18px;
+            object-fit: contain;
+        }
+
+        .car-no-image {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            min-height: 300px;
+            width: 100%;
+            color: #8394a9;
+            text-align: center;
+        }
+
+        .car-no-image i {
+            font-size: 66px;
+            color: #9aacc1;
+        }
+
+        .car-no-image span {
+            font-size: 14px;
+        }
+
+        .car-availability {
+            position: absolute;
+            top: 17px;
+            left: 17px;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 800;
+            box-shadow: 0 4px 14px rgba(20, 40, 70, .06);
+        }
+
+        .car-availability.available {
+            color: #087847;
+            background: #e2f8eb;
+        }
+
+        .car-availability.unavailable {
+            color: #b42318;
+            background: #ffebea;
+        }
+
+        .car-visual-caption {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 15px 17px;
+            background: #f7faff;
+            border: 1px solid #e9f0f8;
+            border-radius: 12px;
+        }
+
+        .car-visual-caption > i {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 42px;
+            height: 42px;
+            color: var(--primary);
+            background: #e7f1ff;
+            border-radius: 10px;
+            font-size: 17px;
+        }
+
+        .car-visual-caption div {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .car-visual-caption strong {
+            color: var(--navy);
+            font-size: 13px;
+        }
+
+        .car-visual-caption span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .car-detail-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 0;
+            padding: 5px 0;
+        }
+
+        .car-detail-label {
+            margin-bottom: 11px;
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2.3px;
+        }
+
+        .car-detail-title {
+            margin: 0 0 14px;
+            color: var(--navy);
+            font-size: clamp(30px, 3vw, 43px);
+            font-weight: 800;
+            line-height: 1.16;
+            overflow-wrap: anywhere;
+        }
+
+        .car-detail-plate {
+            display: inline-flex;
+            align-items: center;
+            align-self: flex-start;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin-bottom: 18px;
+            padding: 9px 12px;
+            color: #355473;
+            background: #f2f6fb;
+            border: 1px solid #e0e8f2;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .car-detail-plate i {
+            color: var(--primary);
+        }
+
+        .car-detail-year {
+            padding-left: 10px;
+            border-left: 1px solid #d3deeb;
+            color: var(--muted);
+        }
+
+        .car-detail-description {
+            margin: 0 0 23px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.85;
+        }
+
+        .car-price-box {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 19px;
+            padding: 20px;
+            background: linear-gradient(135deg, #eff6ff, #f7faff);
+            border: 1px solid #e1edfc;
+            border-radius: 15px;
+        }
+
+        .car-price-label {
+            display: block;
+            margin-bottom: 7px;
+            color: #637b97;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .car-detail-price {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .car-detail-price strong {
+            color: var(--primary);
+            font-size: clamp(29px, 3vw, 37px);
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .car-detail-price span {
+            color: #6f829a;
+            font-size: 13px;
+        }
+
+        .car-deposit {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+        }
+
+        .car-deposit span {
+            color: #637b97;
+            font-size: 12px;
+        }
+
+        .car-deposit strong {
+            color: var(--navy);
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .car-specs {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin: 0 0 23px;
+            border-top: 1px solid #edf1f6;
+        }
+
+        .car-spec {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            min-width: 0;
+            padding: 15px 9px;
+            border-bottom: 1px solid #edf1f6;
+        }
+
+        .car-spec:nth-child(odd) {
+            padding-left: 0;
+            border-right: 1px solid #edf1f6;
+        }
+
+        .car-spec:nth-child(even) {
+            padding-right: 0;
+            padding-left: 15px;
+        }
+
+        .car-spec-icon,
+        .car-info-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 41px;
+            height: 41px;
+            color: #1c5d9e;
+            background: #edf5ff;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+
+        .car-spec > div:last-child,
+        .car-info-card > div:last-child {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 0;
+        }
+
+        .car-spec span,
+        .car-info-card span {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .car-spec strong,
+        .car-info-card strong {
+            color: #203955;
+            font-size: 13px;
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        .car-detail-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+        }
+
+        .car-book-btn,
+        .car-back-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            min-height: 53px;
+            padding: 14px 18px;
+            border: 1px solid transparent;
+            border-radius: 11px;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            transition: background .2s, border-color .2s, transform .2s;
+            cursor: pointer;
+        }
+
+        .car-book-btn {
+            color: #fff;
+            background: var(--primary);
+            box-shadow: 0 7px 18px rgba(8, 120, 237, .2);
+        }
+
+        .car-book-btn:hover {
+            color: #fff;
+            background: #0666cb;
+            transform: translateY(-2px);
+        }
+
+        .car-book-btn.disabled {
+            color: #8a3940;
+            background: #fce9e9;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .car-back-btn {
+            color: #355473;
+            background: #fff;
+            border-color: #dce5f0;
+        }
+
+        .car-back-btn:hover {
+            color: var(--primary);
+            background: #f6faff;
+            border-color: #b8d6fb;
+        }
+
+        .car-trust-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 17px;
+        }
+
+        .car-trust-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            color: #657b94;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .car-trust-item i {
+            color: #16845b;
+            font-size: 14px;
+        }
+
+        .car-info-section {
+            padding-top: 27px;
+        }
+
+        .car-info-panel {
+            padding: 28px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 19px;
+            box-shadow: 0 10px 30px rgba(28, 58, 94, .04);
+        }
+
+        .car-info-header {
+            margin-bottom: 23px;
+        }
+
+        .car-info-eyebrow {
+            display: block;
+            margin-bottom: 7px;
+            color: var(--primary);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .car-info-heading {
+            margin: 0;
+            color: var(--navy);
+            font-size: 23px;
+            font-weight: 800;
+        }
+
+        .car-info-subtitle {
+            margin: 7px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .car-info-cards {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 13px;
+        }
+
+        .car-info-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            padding: 17px 13px;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            background: #fff;
+            transition: border-color .2s, transform .2s, box-shadow .2s;
+        }
+
+        .car-info-card:hover {
+            border-color: #bfd9fa;
+            box-shadow: 0 7px 20px rgba(28, 58, 94, .05);
+            transform: translateY(-2px);
+        }
+
+        .car-rental-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+            margin-top: 17px;
+            padding: 17px 19px;
+            color: #526c88;
+            background: #f2f7fd;
+            border: 1px solid #e3edf9;
+            border-radius: 13px;
+            font-size: 12px;
+            line-height: 1.75;
+        }
+
+        .car-rental-note > i {
+            margin-top: 3px;
+            color: var(--primary);
+            font-size: 17px;
+        }
+
+        .car-rental-note p {
+            margin: 0;
+        }
+
+        @@media (max-width: 991px) {
+            .car-detail-wrapper {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 26px;
+                padding: 22px;
+            }
+
+            .car-detail-image {
+                min-height: 300px;
+            }
+
+            .car-detail-image > img {
+                height: 340px;
+            }
+
+            .car-info-cards {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @@media (max-width: 575px) {
+            .car-detail-breadcrumb {
+                gap: 8px;
+                padding: 18px 0;
+                font-size: 12px;
+            }
+
+            .car-detail-wrapper {
+                gap: 21px;
+                padding: 13px;
+                border-radius: 15px;
+            }
+
+            .car-detail-image {
+                min-height: 235px;
+            }
+
+            .car-detail-image > img {
+                height: 235px;
+                padding: 8px;
+            }
+
+            .car-availability {
+                top: 10px;
+                left: 10px;
+                padding: 8px 10px;
+                font-size: 11px;
+            }
+
+            .car-detail-title {
+                font-size: 29px;
+            }
+
+            .car-detail-description {
+                font-size: 13px;
+            }
+
+            .car-price-box {
+                padding: 15px;
+            }
+
+            .car-detail-price strong {
+                font-size: 29px;
+            }
+
+            .car-spec {
+                gap: 8px;
+                padding: 13px 5px;
+            }
+
+            .car-spec:nth-child(even) {
+                padding-left: 9px;
+            }
+
+            .car-spec-icon {
+                width: 34px;
+                height: 34px;
+                border-radius: 9px;
+                font-size: 13px;
+            }
+
+            .car-spec strong {
+                font-size: 12px;
+            }
+
+            .car-trust-row {
+                gap: 6px;
+            }
+
+            .car-trust-item {
+                flex-direction: column;
+                gap: 5px;
+                font-size: 10px;
+            }
+
+            .car-info-panel {
+                padding: 19px 14px;
+            }
+
+            .car-info-heading {
+                font-size: 21px;
+            }
+
+            .car-info-cards {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 9px;
+            }
+
+            .car-info-card {
+                padding: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="public-car-detail">
+        <div class="container">
+            <nav class="car-detail-breadcrumb" aria-label="Sayfa konumu">
+                <a asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+                <i class="fa-solid fa-chevron-right"></i>
+                <a asp-controller="Car" asp-action="CarList">Araçlar</a>
+                <i class="fa-solid fa-chevron-right"></i>
+                <span>@brandName @modelName</span>
+            </nav>
+        </div>
+
+        <section>
+            <div class="container">
+                <div class="car-detail-wrapper">
+                    <div class="car-detail-visual">
+                        <div class="car-detail-image">
+                            @if (!string.IsNullOrWhiteSpace(imageUrl))
+                            {
+                                <img src="@imageUrl"
+                                     alt="@brandName @modelName"
+                                     onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex';" />
+
+                                <div class="car-no-image" style="display:none;">
+                                    <i class="fa-solid fa-car-side"></i>
+                                    <span>Araç görseli yüklenemedi.</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="car-no-image">
+                                    <i class="fa-solid fa-car-side"></i>
+                                    <span>Bu araç için görsel eklenmemiş.</span>
+                                </div>
+                            }
+
+                            <div class="car-availability @(isAvailable ? "available" : "unavailable")">
+                                <i class="fa-solid @(isAvailable ? "fa-circle-check" : "fa-circle-xmark")"></i>
+                                @(isAvailable ? "Filoda aktif" : "Şu anda müsait değil")
+                            </div>
+                        </div>
+
+                        <div class="car-visual-caption">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <div>
+                                <strong>Konforlu yolculuk, güvenli seçim</strong>
+                                <span>Rezervasyon öncesinde araç özelliklerini inceleyin.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="car-detail-content">
+                        <span class="car-detail-label">RENTALY PREMIUM FİLO</span>
+
+                        <h1 class="car-detail-title">@brandName @modelName</h1>
+
+                        <div class="car-detail-plate">
+                            <i class="fa-solid fa-car-side"></i>
+                            <span>@Model.PlateNumber</span>
+                            <span class="car-detail-year">@Model.Year</span>
+                        </div>
+
+                        <p class="car-detail-description">
+                            İhtiyaçlarınıza uygun aracın özelliklerini inceleyin.
+                            Günlük kiralama fiyatını ve depozito tutarını görüntüleyerek
+                            rezervasyon adımına geçebilirsiniz.
+                        </p>
+
+                        <div class="car-price-box">
+                            <div>
+                                <span class="car-price-label">Günlük kiralama bedeli</span>
+                                <div class="car-detail-price">
+                                    <strong>@Model.DailyPrice.ToString("N2") ₺</strong>
+                                    <span>/ gün</span>
+                                </div>
+                            </div>
+
+                            <div class="car-deposit">
+                                <span><i class="fa-solid fa-lock"></i> Depozito</span>
+                                <strong>@Model.DepositAmount.ToString("N2") ₺</strong>
+                            </div>
+                        </div>
+
+                        <div class="car-specs">
+                            <div class="car-spec">
+                                <div class="car-spec-icon">
+                                    <i class="fa-regular fa-calendar"></i>
+                                </div>
+                                <div>
+                                    <span>Model yılı</span>
+                                    <strong>@Model.Year</strong>
+                                </div>
+                            </div>
+
+                            <div class="car-spec">
+                                <div class="car-spec-icon">
+                                    <i class="fa-solid fa-gauge-high"></i>
+                                </div>
+                                <div>
+                                    <span>Kilometre</span>
+                                    <strong>@Model.Kilometer.ToString("N0") km</strong>
+                                </div>
+                            </div>
+
+                            <div class="car-spec">
+                                <div class="car-spec-icon">
+                                    <i class="fa-solid fa-gas-pump"></i>
+                                </div>
+                                <div>
+                                    <span>Yakıt tipi</span>
+                                    <strong>@(string.IsNullOrWhiteSpace(Model.FuelType) ? "Belirtilmemiş" : Model.FuelType)</strong>
+                                </div>
+                            </div>
+
+                            <div class="car-spec">
+                                <div class="car-spec-icon">
+                                    <i class="fa-solid fa-users"></i>
+                                </div>
+                                <div>
+                                    <span>Koltuk kapasitesi</span>
+                                    <strong>@Model.SeatCount kişi</strong>
+                                </div>
+                            </div>
+
+                            <div class="car-spec">
+                                <div class="car-spec-icon">
+                                    <i class="fa-solid fa-suitcase"></i>
+                                </div>
+                                <div>
+                                    <span>Bagaj kapasitesi</span>
+                                    <strong>@Model.LuggageCount</strong>
+                                </div>
+                            </div>
+
+                            <div class="car-spec">
+                                <div class="car-spec-icon">
+                                    <i class="fa-solid fa-fingerprint"></i>
+                                </div>
+                                <div>
+                                    <span>Araç numarası</span>
+                                    <strong>@Model.CarId</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="car-detail-actions">
+                            @if (isAvailable)
+                            {
+                                <a asp-controller="Booking"
+                                   asp-action="Index"
+                                   asp-route-carId="@Model.CarId"
+                                   class="car-book-btn">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                    Şimdi Rezervasyon Yap
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <button type="button" class="car-book-btn disabled" disabled>
+                                    <i class="fa-solid fa-ban"></i>
+                                    Araç Şu Anda Müsait Değil
+                                </button>
+                            }
+
+                            <a asp-controller="Car"
+                               asp-action="CarList"
+                               class="car-back-btn">
+                                <i class="fa-solid fa-arrow-left"></i>
+                                Tüm Araçları Görüntüle
+                            </a>
+                        </div>
+
+                        <div class="car-trust-row">
+                            <div class="car-trust-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <span>Kolay rezervasyon</span>
+                            </div>
+                            <div class="car-trust-item">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <span>Şeffaf fiyat bilgisi</span>
+                            </div>
+                            <div class="car-trust-item">
+                                <i class="fa-solid fa-headset"></i>
+                                <span>Müşteri desteği</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="car-info-section">
+            <div class="container">
+                <div class="car-info-panel">
+                    <div class="car-info-header">
+                        <span class="car-info-eyebrow">TEKNİK ÖZELLİKLER</span>
+                        <h2 class="car-info-heading">Araç hakkında detaylar</h2>
+                        <p class="car-info-subtitle">
+                            Kiralamayı düşündüğünüz aracın temel bilgileri.
+                        </p>
+                    </div>
+
+                    <div class="car-info-cards">
+                        <div class="car-info-card">
+                            <div class="car-info-icon">
+                                <i class="fa-solid fa-car"></i>
+                            </div>
+                            <div>
+                                <span>Marka ve model</span>
+                                <strong>@brandName @modelName</strong>
+                            </div>
+                        </div>
+
+                        <div class="car-info-card">
+                            <div class="car-info-icon">
+                                <i class="fa-solid fa-gas-pump"></i>
+                            </div>
+                            <div>
+                                <span>Yakıt tipi</span>
+                                <strong>@(string.IsNullOrWhiteSpace(Model.FuelType) ? "Belirtilmemiş" : Model.FuelType)</strong>
+                            </div>
+                        </div>
+
+                        <div class="car-info-card">
+                            <div class="car-info-icon">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <div>
+                                <span>Koltuk sayısı</span>
+                                <strong>@Model.SeatCount kişi</strong>
+                            </div>
+                        </div>
+
+                        <div class="car-info-card">
+                            <div class="car-info-icon">
+                                <i class="fa-solid fa-suitcase"></i>
+                            </div>
+                            <div>
+                                <span>Bagaj kapasitesi</span>
+                                <strong>@Model.LuggageCount</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="car-rental-note">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <p>
+                            Gösterilen günlük fiyat ve depozito bilgilerini rezervasyon
+                            öncesinde kontrol edin. Nihai kiralama tutarı, seçilen tarihler
+                            ve sisteminizde tanımlı rezervasyon koşullarına göre belirlenir.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="~/RentalyTema/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+﻿@model Rentaly.EntityLayer.Entities.Rental
+
+@{
+    ViewData["Title"] = "Yeni Kiralama";
+}
+
+<div class="container-fluid py-4">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Yeni Kiralama</h2>
+        <p class="text-muted">
+            Yeni araç kiralama kaydı oluşturun.
+        </p>
+    </div>
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">Kiralama Bilgileri</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-area="Admin"
+                  asp-controller="Rental"
+                  asp-action="Create"
+                  method="post">
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3">
+                </div>
+
+                <div class="row">
+
+                    <!-- ARAÇ -->
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Araç
+                        </label>
+
+                        <select asp-for="CarId"
+                                asp-items="ViewBag.Cars"
+                                class="form-select">
+
+                            <option value="">
+                                Araç Seçiniz
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="CarId"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+                    <!-- MÜŞTERİ -->
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Müşteri
+                        </label>
+
+                        <select asp-for="CustomerId"
+                                asp-items="ViewBag.Customers"
+                                class="form-select">
+
+                            <option value="">
+                                Müşteri Seçiniz
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="CustomerId"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+                    <!-- ALIŞ ŞUBESİ -->
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Alış Şubesi
+                        </label>
+
+                        <select asp-for="PickupBranchId"
+                                asp-items="ViewBag.Branches"
+                                class="form-select">
+
+                            <option value="">
+                                Alış Şubesi Seçiniz
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- TESLİM ŞUBESİ -->
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Teslim Şubesi
+                        </label>
+
+                        <select asp-for="ReturnBranchId"
+                                asp-items="ViewBag.Branches"
+                                class="form-select">
+
+                            <option value="">
+                                Teslim Şubesi Seçiniz
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- ALIŞ TARİHİ -->
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Alış Tarihi
+                        </label>
+
+                        <input asp-for="PickupDate"
+                               type="datetime-local"
+                               class="form-control" />
+
+                        <span asp-validation-for="PickupDate"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+                    <!-- TESLİM TARİHİ -->
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Teslim Tarihi
+                        </label>
+
+                        <input asp-for="ReturnDate"
+                               type="datetime-local"
+                               class="form-control" />
+
+                        <span asp-validation-for="ReturnDate"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+                    <!-- FİYAT -->
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Toplam Fiyat
+                        </label>
+
+                        <input asp-for="TotalPrice"
+                               type="number"
+                               step="0.01"
+                               min="0"
+                               class="form-control"
+                               placeholder="0.00" />
+
+                    </div>
+
+                    <!-- DURUM -->
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Durum
+                        </label>
+
+                        <select asp-for="Status" class="form-select">
+                            <option value="Pending">Bekliyor</option>
+                            <option value="Approved">Onaylandı</option>
+                            <option value="Rejected">Reddedildi</option>
+                            <option value="Cancelled">İptal</option>
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-3">
+
+                    <a href="/Admin/Rental/Index"
+                       class="btn btn-secondary">
+                        Vazgeç
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Kiralamayı Kaydet
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
